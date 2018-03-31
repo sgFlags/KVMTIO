@@ -109,13 +109,15 @@ int read_cache_pages(struct address_space *mapping, struct list_head *pages,
 EXPORT_SYMBOL(read_cache_pages);
 
 static int read_pages(struct address_space *mapping, struct file *filp,
-		struct list_head *pages, unsigned int nr_pages, gfp_t gfp)
+		struct list_head *pages, unsigned int nr_pages, gfp_t gfp, unsigned int prio)
 {
 	struct blk_plug plug;
 	unsigned page_idx;
 	int ret;
 
 	blk_start_plug(&plug);
+
+    printk("read pages!! prio is %d\n", prio);
 
 	if (mapping->a_ops->readpages) {
 		ret = mapping->a_ops->readpages(filp, mapping, pages, nr_pages);
@@ -197,6 +199,62 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	 */
 	if (ret)
 		read_pages(mapping, filp, &page_pool, ret, gfp_mask);
+	BUG_ON(!list_empty(&page_pool));
+out:
+	return ret;
+}
+
+/* e6998 */
+int __tag_do_page_cache_readahead(struct address_space *mapping, struct file *filp,
+			pgoff_t offset, unsigned long nr_to_read,
+			unsigned long lookahead_size, unsigned int prio)
+{
+	struct inode *inode = mapping->host;
+	struct page *page;
+	unsigned long end_index;	/* The last page we want to read */
+	LIST_HEAD(page_pool);
+	int page_idx;
+	int ret = 0;
+	loff_t isize = i_size_read(inode);
+	gfp_t gfp_mask = readahead_gfp_mask(mapping);
+
+	if (isize == 0)
+		goto out;
+
+	end_index = ((isize - 1) >> PAGE_SHIFT);
+
+	/*
+	 * Preallocate as many pages as we will need.
+	 */
+	for (page_idx = 0; page_idx < nr_to_read; page_idx++) {
+		pgoff_t page_offset = offset + page_idx;
+
+		if (page_offset > end_index)
+			break;
+
+		rcu_read_lock();
+		page = radix_tree_lookup(&mapping->page_tree, page_offset);
+		rcu_read_unlock();
+		if (page && !radix_tree_exceptional_entry(page))
+			continue;
+
+		page = __page_cache_alloc(gfp_mask);
+		if (!page)
+			break;
+		page->index = page_offset;
+		list_add(&page->lru, &page_pool);
+		if (page_idx == nr_to_read - lookahead_size)
+			SetPageReadahead(page);
+		ret++;
+	}
+
+	/*
+	 * Now start the IO.  We ignore I/O errors - if the page is not
+	 * uptodate then the caller will launch readpage again, and
+	 * will then handle the error.
+	 */
+	if (ret)
+		read_pages(mapping, filp, &page_pool, ret, gfp_mask, prio);
 	BUG_ON(!list_empty(&page_pool));
 out:
 	return ret;
@@ -382,6 +440,9 @@ ondemand_readahead(struct address_space *mapping,
 	unsigned long max_pages = ra->ra_pages;
 	pgoff_t prev_offset;
 
+    /* e6998 */
+    unsigned int prio = ra->prio;
+
 	/*
 	 * If the request exceeds the readahead window, allow the read to
 	 * be up to the optimal hardware IO size
@@ -457,7 +518,9 @@ ondemand_readahead(struct address_space *mapping,
 	 * standalone, small random read
 	 * Read as is, and do not pollute the readahead state.
 	 */
-	return __do_page_cache_readahead(mapping, filp, offset, req_size, 0);
+
+    /* e6998 */
+	return __tag_do_page_cache_readahead(mapping, filp, offset, req_size, 0, prio);
 
 initial_readahead:
 	ra->start = offset;
