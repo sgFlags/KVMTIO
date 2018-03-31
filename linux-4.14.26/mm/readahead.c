@@ -120,6 +120,9 @@ static int read_pages(struct address_space *mapping, struct file *filp,
     printk("read pages!! prio is %d\n", prio);
 
 	if (mapping->a_ops->readpages) {
+        /* e6998 */
+        filp->prio = prio;
+
 		ret = mapping->a_ops->readpages(filp, mapping, pages, nr_pages);
 		/* Clean up the remaining pages */
 		put_pages_list(pages);
@@ -129,8 +132,11 @@ static int read_pages(struct address_space *mapping, struct file *filp,
 	for (page_idx = 0; page_idx < nr_pages; page_idx++) {
 		struct page *page = lru_to_page(pages);
 		list_del(&page->lru);
-		if (!add_to_page_cache_lru(page, mapping, page->index, gfp))
+		if (!add_to_page_cache_lru(page, mapping, page->index, gfp)) {
+            /* e6998 */
+            filp->prio = prio;
 			mapping->a_ops->readpage(filp, page);
+        }
 		put_page(page);
 	}
 	ret = 0;

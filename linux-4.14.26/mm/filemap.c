@@ -1956,6 +1956,7 @@ static ssize_t generic_file_buffered_read(struct kiocb *iocb,
     /* e6998 */
     prio = iter->prio;
     ra->prio = prio;
+    filp->prio = 0;
     printk("in generic_file_buffered_read, prio is %d\n", prio);
 
 	if (unlikely(*ppos >= inode->i_sb->s_maxbytes))
@@ -2122,7 +2123,9 @@ readpage:
 		 */
 		ClearPageError(page);
 		/* Start the actual read. The read will unlock the page. */
-		error = mapping->a_ops->readpage(filp, page);
+		/* e6998 */
+        filp->prio = prio;
+        error = mapping->a_ops->readpage(filp, page);
 
 		if (unlikely(error)) {
 			if (error == AOP_TRUNCATED_PAGE) {
@@ -2166,6 +2169,7 @@ no_cached_page:
 		 * Ok, it wasn't cached, so we need to create a new
 		 * page..
 		 */
+        printk("no cached page!\n");
 		page = page_cache_alloc_cold(mapping);
 		if (!page) {
 			error = -ENOMEM;

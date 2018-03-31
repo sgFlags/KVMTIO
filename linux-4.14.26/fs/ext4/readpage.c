@@ -96,9 +96,10 @@ static void mpage_end_io(struct bio *bio)
 	bio_put(bio);
 }
 
+/* e6998 add a prio parameter */
 int ext4_mpage_readpages(struct address_space *mapping,
 			 struct list_head *pages, struct page *page,
-			 unsigned nr_pages)
+			 unsigned nr_pages, unsigned int prio)
 {
 	struct bio *bio = NULL;
 	sector_t last_block_in_bio = 0;
@@ -122,6 +123,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	map.m_len = 0;
 	map.m_flags = 0;
 
+    printk("in ext4_mpage_readpages, prio is %d\n", prio);
 	for (; nr_pages; nr_pages--) {
 		int fully_mapped = 1;
 		unsigned first_hole = blocks_per_page;

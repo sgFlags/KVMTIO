@@ -399,7 +399,7 @@ static ssize_t new_sync_read(struct file *filp, char __user *buf, size_t len, lo
 	iov_iter_init(&iter, READ, &iov, 1, len);
     
     /* e6998 */
-    iter.prio = -1;
+    iter.prio = 0;
 
 	ret = call_read_iter(filp, &kiocb, &iter);
 	BUG_ON(ret == -EIOCBQUEUED);
