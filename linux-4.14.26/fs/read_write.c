@@ -420,6 +420,7 @@ static ssize_t tag_new_sync_read(struct file *filp, char __user *buf, size_t len
 	iov_iter_init(&iter, READ, &iov, 1, len);
     iter.prio = prio;
 
+    printk("in tag_new_sync_read, prio is %d\n", prio);
 	ret = call_read_iter(filp, &kiocb, &iter);
 	BUG_ON(ret == -EIOCBQUEUED);
 	*ppos = kiocb.ki_pos;
