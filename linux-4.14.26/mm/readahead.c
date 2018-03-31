@@ -448,7 +448,8 @@ ondemand_readahead(struct address_space *mapping,
 
     /* e6998 */
     unsigned int prio = ra->prio;
-
+    
+    printk("ondemand_readahead, prio is %d\n", prio);
 	/*
 	 * If the request exceeds the readahead window, allow the read to
 	 * be up to the optimal hardware IO size
