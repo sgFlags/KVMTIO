@@ -198,7 +198,7 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	 * will then handle the error.
 	 */
 	if (ret)
-		read_pages(mapping, filp, &page_pool, ret, gfp_mask);
+		read_pages(mapping, filp, &page_pool, ret, gfp_mask, -1);
 	BUG_ON(!list_empty(&page_pool));
 out:
 	return ret;
