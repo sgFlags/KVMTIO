@@ -57,6 +57,13 @@ extern int __do_page_cache_readahead(struct address_space *mapping,
 		struct file *filp, pgoff_t offset, unsigned long nr_to_read,
 		unsigned long lookahead_size);
 
+/* e6998 */
+extern int __tag_do_page_cache_readahead(struct address_space *mapping,
+		struct file *filp, pgoff_t offset, unsigned long nr_to_read,
+		unsigned long lookahead_size, unsigned int prio);
+
+
+
 /*
  * Submit IO for the read-ahead request in file_ra_state.
  */
