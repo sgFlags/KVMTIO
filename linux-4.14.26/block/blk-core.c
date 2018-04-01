@@ -1808,7 +1808,7 @@ void blk_init_request_from_bio(struct request *req, struct bio *bio)
 {
 	struct io_context *ioc = rq_ioc(bio);
     /* e6998 */
-    unsigned int my_prio = bio->prio;
+    unsigned int my_prio = atomic_read(&bio->prio);
 
     req->my_prio = my_prio;
 	if (bio->bi_opf & REQ_RAHEAD)
