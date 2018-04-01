@@ -285,7 +285,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	confused:
 		if (bio) {
             /* e6998 */
-            if (bio)
+            //if (bio)
                 bio->prio = prio;
 			submit_bio(bio);
 			bio = NULL;
@@ -301,8 +301,8 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	BUG_ON(pages && !list_empty(pages));
 	if (bio) {
         /* e6998 */
-        if (bio)
-            bio->prio = prio;
+        //if (bio)
+            //bio->prio = prio;
 		submit_bio(bio);
     }
 	return 0;
