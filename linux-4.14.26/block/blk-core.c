@@ -1631,7 +1631,7 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
 
-    //printk("in bio_attenpt_back_merge, request bio is %d\n", req->my_prio);
+    printk("in bio_attenpt_back_merge, request bio is %d\n", req->my_prio);
 
 	blk_account_io_start(req, false);
 	return true;
@@ -1657,7 +1657,7 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
     
-    //printk("in bio_attenpt_front_merge, request bio is %d\n", req->my_prio);
+    printk("in bio_attenpt_front_merge, request bio is %d\n", req->my_prio);
 
 	blk_account_io_start(req, false);
 	return true;
@@ -1893,7 +1893,7 @@ get_rq:
 	}
 
     /* e6998 test */
-    //printk("request default prio is %d\n", req->my_prio);
+    printk("request default prio is %d\n", req->my_prio);
 
 	wbt_track(&req->issue_stat, wb_acct);
 
