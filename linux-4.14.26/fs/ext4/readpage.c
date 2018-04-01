@@ -301,8 +301,8 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	BUG_ON(pages && !list_empty(pages));
 	if (bio) {
         /* e6998 */
-        if (bio_has_data(bio))
-            bio->prio = prio;
+        //if (bio_has_data(bio))
+          //  bio->prio = prio;
 		submit_bio(bio);
     }
 	return 0;
