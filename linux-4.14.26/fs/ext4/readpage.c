@@ -302,7 +302,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	if (bio) {
         /* e6998 */
         //if (bio_has_data(bio))
-        atomic_set(&bio->prio, prio);
+        //atomic_set(&bio->prio, prio);
         printk("come to not handled bio\n");
 		submit_bio(bio);
     }
