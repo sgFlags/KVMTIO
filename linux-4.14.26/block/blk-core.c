@@ -2299,6 +2299,7 @@ blk_qc_t submit_bio(struct bio *bio)
 	 * If it's a regular read/write or a barrier with data attached,
 	 * go through the normal accounting stuff before submission.
 	 */
+    printk("submit_bio\n");
 	if (bio_has_data(bio)) {
 		unsigned int count;
 
