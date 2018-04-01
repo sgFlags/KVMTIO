@@ -1613,6 +1613,19 @@ void blk_put_request(struct request *req)
 }
 EXPORT_SYMBOL(blk_put_request);
 
+/* w6998 */
+unsigned int choose_tio_prio(unsigned int prioa, unsigned int priob)
+{
+    int prio_a = 255;
+    int prio_b = 255;
+
+    if (prioa <= 255 && prioa > 1)
+        prio_a = prioa;
+    if (priob <= 255 && priob > 1)
+        prio_b = priob;
+    return prio_a > prio_b ? prio_b : prio_a;
+}
+
 bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 			    struct bio *bio)
 {
@@ -1631,6 +1644,7 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
 
+    req->my_prio = choose_tio_prio(req->my_prio, bio->prio);
     printk("in bio_attenpt_back_merge, request bio is %d\n", req->my_prio);
 
 	blk_account_io_start(req, false);
@@ -1656,7 +1670,8 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 	req->__sector = bio->bi_iter.bi_sector;
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
-    
+   
+    req->my_prio = choose_tio_prio(req->my_prio, bio->prio);
     printk("in bio_attenpt_front_merge, request bio is %d\n", req->my_prio);
 
 	blk_account_io_start(req, false);
@@ -1893,7 +1908,7 @@ get_rq:
 	}
 
     /* e6998 test */
-    req->my_prio = 5;
+    req->my_prio = bio->prio;
     printk("request default prio is %d\n", req->my_prio);
 
 	wbt_track(&req->issue_stat, wb_acct);
