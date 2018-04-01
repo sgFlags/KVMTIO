@@ -1816,9 +1816,12 @@ void blk_init_request_from_bio(struct request *req, struct bio *bio)
 {
 	struct io_context *ioc = rq_ioc(bio);
     /* e6998 */
-    unsigned int my_prio = atomic_read(&bio->prio);
+    unsigned int tag_prio = atomic_read(&bio->prio);
 
-    atomic_set(&req->my_prio, my_prio);
+    if (tag_prio > 0 && tag_prio <= 255)
+        atomic_set(&req->my_prio, tag_prio);
+    else
+        atomic_set(&req->my_prio, 255);
 	if (bio->bi_opf & REQ_RAHEAD)
 		req->cmd_flags |= REQ_FAILFAST_MASK;
 
@@ -1919,10 +1922,6 @@ get_rq:
 
     /* e6998 test */
     tag_prio = atomic_read(&bio->prio);
-    if (tag_prio > 0 && tag_prio <= 255)
-        atomic_set(&req->my_prio, tag_prio);
-    else
-        atomic_set(&req->my_prio, 255);
     printk("request default prio is %d\n", tag_prio);
 
 	wbt_track(&req->issue_stat, wb_acct);
