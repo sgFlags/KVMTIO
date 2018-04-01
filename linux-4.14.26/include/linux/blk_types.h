@@ -118,7 +118,7 @@ struct bio {
 	struct bio_vec		bi_inline_vecs[0];
 
     /* e6998 */
-    unsigned int prio;
+    atomic_t            prio;
 };
 
 #define BIO_RESET_BYTES		offsetof(struct bio, bi_max_vecs)

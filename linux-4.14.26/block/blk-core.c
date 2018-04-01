@@ -1644,7 +1644,7 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
 
-    req->my_prio = choose_tio_prio(req->my_prio, bio->prio);
+    req->my_prio = choose_tio_prio(req->my_prio, atomic_read(&bio->prio));
     printk("in bio_attenpt_back_merge, request bio is %d\n", req->my_prio);
 
 	blk_account_io_start(req, false);
@@ -1671,7 +1671,7 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
    
-    req->my_prio = choose_tio_prio(req->my_prio, bio->prio);
+    req->my_prio = choose_tio_prio(req->my_prio, atomic_read(&bio->prio));
     printk("in bio_attenpt_front_merge, request bio is %d\n", req->my_prio);
 
 	blk_account_io_start(req, false);
@@ -1833,6 +1833,8 @@ static blk_qc_t blk_queue_bio(struct request_queue *q, struct bio *bio)
 	struct request *req, *free;
 	unsigned int request_count = 0;
 	unsigned int wb_acct;
+    /* e6998 */
+    unsigned int tag_prio;
 
 	/*
 	 * low level driver can indicate that it wants pages above a
@@ -1908,7 +1910,11 @@ get_rq:
 	}
 
     /* e6998 test */
-    req->my_prio = bio->prio;
+    tag_prio = atomic_read(&bio->prio);
+    if (tag_prio > 0 && tag_prio <= 255)
+        req->my_prio = tag_prio;
+    else
+        req->my_prio = 255;
     printk("request default prio is %d\n", req->my_prio);
 
 	wbt_track(&req->issue_stat, wb_acct);

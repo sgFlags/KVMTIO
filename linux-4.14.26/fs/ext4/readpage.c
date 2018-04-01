@@ -240,7 +240,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		submit_and_realloc:
             /* e6998 */
             if (bio)
-                bio->prio = prio;
+                atomic_set(&bio->prio, prio);
 			submit_bio(bio);
 			bio = NULL;
 		}
@@ -276,7 +276,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		    (first_hole != blocks_per_page)) {
             /* e6998 */
             if (bio)
-                bio->prio = prio;
+                atomic_set(&bio->prio, prio);
 			submit_bio(bio);
 			bio = NULL;
 		} else
@@ -286,7 +286,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		if (bio) {
             /* e6998 */
             //if (bio)
-                bio->prio = prio;
+            atomic_set(&bio->prio, prio);
 			submit_bio(bio);
 			bio = NULL;
 		}
@@ -302,7 +302,7 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	if (bio) {
         /* e6998 */
         //if (bio_has_data(bio))
-        bio->prio = prio;
+        atomic_set(&bio->prio, prio);
         printk("come to not handled bio\n");
 		submit_bio(bio);
     }
