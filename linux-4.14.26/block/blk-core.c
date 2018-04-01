@@ -1893,6 +1893,7 @@ get_rq:
 	}
 
     /* e6998 test */
+    req->my_prio = 5;
     printk("request default prio is %d\n", req->my_prio);
 
 	wbt_track(&req->issue_stat, wb_acct);
