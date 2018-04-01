@@ -1630,6 +1630,8 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 			    struct bio *bio)
 {
 	const int ff = bio->bi_opf & REQ_FAILFAST_MASK;
+    /* e6998 */
+    unsigned int prio;
 
 	if (!ll_back_merge_fn(q, req, bio))
 		return false;
@@ -1644,8 +1646,10 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
 
-    req->my_prio = choose_tio_prio(req->my_prio, atomic_read(&bio->prio));
-    printk("in bio_attenpt_back_merge, request bio is %d\n", req->my_prio);
+    /* e6998 */
+    prio = choose_tio_prio(atomic_read(&req->my_prio), atomic_read(&bio->prio));
+    atomic_set(&req->my_prio, prio);
+    printk("in bio_attenpt_back_merge, request bio is %d\n", prio);
 
 	blk_account_io_start(req, false);
 	return true;
@@ -1655,6 +1659,8 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 			     struct bio *bio)
 {
 	const int ff = bio->bi_opf & REQ_FAILFAST_MASK;
+    /* e6998 */
+    unsigned int prio;
 
 	if (!ll_front_merge_fn(q, req, bio))
 		return false;
@@ -1671,8 +1677,10 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
    
-    req->my_prio = choose_tio_prio(req->my_prio, atomic_read(&bio->prio));
-    printk("in bio_attenpt_front_merge, request bio is %d\n", req->my_prio);
+    /* e6998 */
+    prio = choose_tio_prio(atomic_read(&req->my_prio), atomic_read(&bio->prio));
+    atomic_set(&req->my_prio, prio);
+    printk("in bio_attenpt_front_merge, request bio is %d\n", prio);
 
 	blk_account_io_start(req, false);
 	return true;
@@ -1810,7 +1818,7 @@ void blk_init_request_from_bio(struct request *req, struct bio *bio)
     /* e6998 */
     unsigned int my_prio = atomic_read(&bio->prio);
 
-    req->my_prio = my_prio;
+    atomic_set(&req->my_prio, my_prio);
 	if (bio->bi_opf & REQ_RAHEAD)
 		req->cmd_flags |= REQ_FAILFAST_MASK;
 
@@ -1912,10 +1920,10 @@ get_rq:
     /* e6998 test */
     tag_prio = atomic_read(&bio->prio);
     if (tag_prio > 0 && tag_prio <= 255)
-        req->my_prio = tag_prio;
+        atomic_set(&req->my_prio, tag_prio);
     else
-        req->my_prio = 255;
-    printk("request default prio is %d\n", req->my_prio);
+        atomic_set(&req->my_prio, 255);
+    printk("request default prio is %d\n", tag_prio);
 
 	wbt_track(&req->issue_stat, wb_acct);
 
