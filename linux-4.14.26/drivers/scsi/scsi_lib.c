@@ -1777,6 +1777,8 @@ static void scsi_request_fn(struct request_queue *q)
 	struct Scsi_Host *shost;
 	struct scsi_cmnd *cmd;
 	struct request *req;
+    /* e6998 */
+    unsigned int prio;
 
 	/*
 	 * To start with, we keep looping until the queue is empty, or until
@@ -1800,6 +1802,9 @@ static void scsi_request_fn(struct request_queue *q)
 			scsi_kill_request(req, q);
 			continue;
 		}
+
+        prio = atomic_read(&req->my_prio);
+        printk("in scsi_fn, prio is %d\n", prio);
 
 		if (!scsi_dev_queue_ready(q, sdev))
 			break;
