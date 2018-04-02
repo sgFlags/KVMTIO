@@ -1804,7 +1804,7 @@ static void scsi_request_fn(struct request_queue *q)
 		}
 
         prio = atomic_read(&req->my_prio);
-        printk("in scsi_fn, prio is %d\n", prio);
+        //printk("in scsi_fn, prio is %d\n", prio);
 
 		if (!scsi_dev_queue_ready(q, sdev))
 			break;

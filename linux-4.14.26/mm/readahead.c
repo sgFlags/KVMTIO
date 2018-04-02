@@ -117,7 +117,7 @@ static int read_pages(struct address_space *mapping, struct file *filp,
 
 	blk_start_plug(&plug);
 
-    printk("read pages!! prio is %d\n", prio);
+   // printk("read pages!! prio is %d\n", prio);
 
 	if (mapping->a_ops->readpages) {
         /* e6998 */
@@ -449,7 +449,7 @@ ondemand_readahead(struct address_space *mapping,
     /* e6998 */
     unsigned int prio = ra->prio;
     
-    printk("ondemand_readahead, prio is %d\n", prio);
+    //printk("ondemand_readahead, prio is %d\n", prio);
 	/*
 	 * If the request exceeds the readahead window, allow the read to
 	 * be up to the optimal hardware IO size
