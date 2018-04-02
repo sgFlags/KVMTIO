@@ -1536,6 +1536,8 @@ void virtio_queue_notify(VirtIODevice *vdev, int n)
 {
     VirtQueue *vq = &vdev->vq[n];
 
+    printf("in virtio_queue_nofify\n");
+
     if (unlikely(!vq->vring.desc || vdev->broken)) {
         return;
     }
