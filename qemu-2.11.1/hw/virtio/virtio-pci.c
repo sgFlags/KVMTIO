@@ -300,6 +300,7 @@ static void virtio_ioport_write(void *opaque, uint32_t addr, uint32_t val)
     VirtIODevice *vdev = virtio_bus_get_device(&proxy->bus);
     hwaddr pa;
 
+    printf("in virtio_ioport_write\n");
     switch (addr) {
     case VIRTIO_PCI_GUEST_FEATURES:
         /* Guest does not negotiate properly?  We have to assume nothing. */
