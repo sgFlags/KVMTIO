@@ -543,7 +543,7 @@ static int virtio_scsi_handle_cmd_req_prepare(VirtIOSCSI *s, VirtIOSCSIReq *req)
     SCSIDevice *d;
     int rc;
 
-    printf("in virtio_scsi_handle_cmd_req_prepare\n");
+    //printf("in virtio_scsi_handle_cmd_req_prepare\n");
 
     rc = virtio_scsi_parse_req(req, sizeof(VirtIOSCSICmdReq) + vs->cdb_size,
                                sizeof(VirtIOSCSICmdResp) + vs->sense_size);
@@ -598,6 +598,7 @@ bool virtio_scsi_handle_cmd_vq(VirtIOSCSI *s, VirtQueue *vq)
 
     QTAILQ_HEAD(, VirtIOSCSIReq) reqs = QTAILQ_HEAD_INITIALIZER(reqs);
 
+    printf("in virtio_scsi_handle_cmd_vq, outside loop\n");
     do {
         virtio_queue_set_notification(vq, 0);
 
