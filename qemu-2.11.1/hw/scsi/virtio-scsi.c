@@ -118,6 +118,8 @@ static int virtio_scsi_parse_req(VirtIOSCSIReq *req,
     VirtIODevice *vdev = (VirtIODevice *) req->dev;
     size_t in_size, out_size;
 
+    printf("in virtio_scsi_parse_req!!!!!\n");
+
     if (iov_to_buf(req->elem.out_sg, req->elem.out_num, 0,
                    &req->req, req_size) < req_size) {
         return -EINVAL;
