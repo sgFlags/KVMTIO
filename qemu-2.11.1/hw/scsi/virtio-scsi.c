@@ -118,7 +118,7 @@ static int virtio_scsi_parse_req(VirtIOSCSIReq *req,
     VirtIODevice *vdev = (VirtIODevice *) req->dev;
     size_t in_size, out_size;
 
-    printf("in virtio_scsi_parse_req!!!!!\n");
+    //printf("in virtio_scsi_parse_req!!!!!\n");
 
     if (iov_to_buf(req->elem.out_sg, req->elem.out_num, 0,
                    &req->req, req_size) < req_size) {
@@ -205,6 +205,7 @@ static void *virtio_scsi_load_request(QEMUFile *f, SCSIRequest *sreq)
     VirtIOSCSIReq *req;
     uint32_t n;
 
+    printf("in virtio_scsi_load_request\n");
     qemu_get_be32s(f, &n);
     assert(n < vs->conf.num_queues);
     req = qemu_get_virtqueue_element(vdev, f,
@@ -397,6 +398,7 @@ static void virtio_scsi_handle_ctrl_req(VirtIOSCSI *s, VirtIOSCSIReq *req)
         return;
     }
 
+    printf("in virtio_scsi_handle_ctrl_req\n");
     virtio_tswap32s(vdev, &type);
     if (type == VIRTIO_SCSI_T_TMF) {
         if (virtio_scsi_parse_req(req, sizeof(VirtIOSCSICtrlTMFReq),
@@ -540,6 +542,8 @@ static int virtio_scsi_handle_cmd_req_prepare(VirtIOSCSI *s, VirtIOSCSIReq *req)
     VirtIOSCSICommon *vs = &s->parent_obj;
     SCSIDevice *d;
     int rc;
+
+    printf("in virtio_scsi_handle_cmd_req_prepare\n");
 
     rc = virtio_scsi_parse_req(req, sizeof(VirtIOSCSICmdReq) + vs->cdb_size,
                                sizeof(VirtIOSCSICmdResp) + vs->sense_size);
@@ -715,6 +719,7 @@ void virtio_scsi_push_event(VirtIOSCSI *s, SCSIDevice *dev,
         return;
     }
 
+    printf("in virtio_scsi_push_event\n");
     req = virtio_scsi_pop_req(s, vs->event_vq);
     if (!req) {
         s->events_dropped = true;
