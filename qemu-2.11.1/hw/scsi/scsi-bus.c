@@ -1350,7 +1350,7 @@ void scsi_req_continue(SCSIRequest *req)
         trace_scsi_req_continue_canceled(req->dev->id, req->lun, req->tag);
         return;
     }
-    printf("scsi_req_continue\n");
+    //printf("scsi_req_continue\n");
     trace_scsi_req_continue(req->dev->id, req->lun, req->tag);
     if (req->cmd.mode == SCSI_XFER_TO_DEV) {
         req->ops->write_data(req);

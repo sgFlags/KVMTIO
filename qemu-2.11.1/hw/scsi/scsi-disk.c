@@ -386,7 +386,7 @@ static void scsi_read_data(SCSIRequest *req)
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
     bool first;
 
-    printf("scsi_read_data\n");
+    //printf("scsi_read_data\n");
 
     DPRINTF("Read sector_count=%d\n", r->sector_count);
     if (r->sector_count == 0) {
@@ -414,10 +414,12 @@ static void scsi_read_data(SCSIRequest *req)
     first = !r->started;
     r->started = true;
     if (first && r->need_fua_emulation) {
+        printf("in first and need_fua\n");
         block_acct_start(blk_get_stats(s->qdev.conf.blk), &r->acct, 0,
                          BLOCK_ACCT_FLUSH);
         r->req.aiocb = blk_aio_flush(s->qdev.conf.blk, scsi_do_read_cb, r);
     } else {
+        printf("scsi_do_read\n");
         scsi_do_read(r, 0);
     }
 }
@@ -2166,7 +2168,7 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
 
     command = buf[0];
 
-    printf("scsi_disk_dma_command\n");
+    //printf("scsi_disk_dma_command\n");
 
     if (!blk_is_available(s->qdev.conf.blk)) {
         scsi_check_condition(r, SENSE_CODE(NO_MEDIUM));
