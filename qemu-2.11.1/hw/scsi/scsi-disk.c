@@ -386,6 +386,8 @@ static void scsi_read_data(SCSIRequest *req)
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
     bool first;
 
+    printf("scsi_read_data\n");
+
     DPRINTF("Read sector_count=%d\n", r->sector_count);
     if (r->sector_count == 0) {
         /* This also clears the sense buffer for REQUEST SENSE.  */
@@ -2163,6 +2165,8 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     uint8_t command;
 
     command = buf[0];
+
+    printf("scsi_disk_dma_command\n");
 
     if (!blk_is_available(s->qdev.conf.blk)) {
         scsi_check_condition(r, SENSE_CODE(NO_MEDIUM));

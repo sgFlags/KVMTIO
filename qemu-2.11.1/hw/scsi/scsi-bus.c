@@ -845,7 +845,7 @@ int32_t scsi_req_enqueue(SCSIRequest *req)
 {
     int32_t rc;
 
-    printf("scsi_req_enqueue\n");
+    //printf("scsi_req_enqueue\n");
     assert(!req->retry);
     scsi_req_enqueue_internal(req);
     scsi_req_ref(req);
