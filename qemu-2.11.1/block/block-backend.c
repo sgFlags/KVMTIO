@@ -1297,8 +1297,10 @@ static BlockAIOCB *blk_aio_prwv(BlockBackend *blk, int64_t offset, int bytes,
     co = qemu_coroutine_create(co_entry, acb);
     bdrv_coroutine_enter(blk_bs(blk), co);
 
+    printf("blk_aio_prwv\n");
     acb->has_returned = true;
     if (acb->rwco.ret != NOT_DONE) {
+        printf("in if NOT_DONE\n");
         aio_bh_schedule_oneshot(blk_get_aio_context(blk),
                                 blk_aio_complete_bh, acb);
     }
@@ -1311,6 +1313,7 @@ static void blk_aio_read_entry(void *opaque)
     BlkAioEmAIOCB *acb = opaque;
     BlkRwCo *rwco = &acb->rwco;
 
+    printf("blk_aio_read_entry\n");
     assert(rwco->qiov->size == acb->bytes);
     rwco->ret = blk_co_preadv(rwco->blk, rwco->offset, acb->bytes,
                               rwco->qiov, rwco->flags);
