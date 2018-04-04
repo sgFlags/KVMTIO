@@ -1136,6 +1136,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
      * passthrough flags.  */
     assert(!(flags & ~(BDRV_REQ_NO_SERIALISING | BDRV_REQ_COPY_ON_READ)));
 
+    printf("bdrv_aligned_preadv\n");
     /* Handle Copy on Read and associated serialisation */
     if (flags & BDRV_REQ_COPY_ON_READ) {
         /* If we touch the same cluster it counts as an overlap.  This
@@ -1231,6 +1232,7 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
         return -ENOMEDIUM;
     }
 
+    printf("bdrv_co_preadv\n");
     ret = bdrv_check_byte_request(bs, offset, bytes);
     if (ret < 0) {
         return ret;
