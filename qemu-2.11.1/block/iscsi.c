@@ -981,6 +981,8 @@ static BlockAIOCB *iscsi_aio_ioctl(BlockDriverState *bs,
     struct iscsi_data data;
     IscsiAIOCB *acb;
 
+    printf("iscsi_aio_ioctl\n");
+
     acb = qemu_aio_get(&iscsi_aiocb_info, bs, cb, opaque);
 
     acb->iscsilun = iscsilun;

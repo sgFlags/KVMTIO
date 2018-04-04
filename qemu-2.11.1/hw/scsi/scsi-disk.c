@@ -342,7 +342,7 @@ static void scsi_do_read(SCSIDiskReq *r, int ret)
     scsi_req_ref(&r->req);
 
     if (r->req.sg) {
-        printf("in sg\n");
+        //printf("in sg\n");
         dma_acct_start(s->qdev.conf.blk, &r->acct, r->req.sg, BLOCK_ACCT_READ);
         r->req.resid -= r->req.sg->size;
         r->req.aiocb = dma_blk_io(blk_get_aio_context(s->qdev.conf.blk),
@@ -2748,7 +2748,7 @@ static BlockAIOCB *scsi_block_dma_readv(int64_t offset,
                                         void *opaque)
 {
     SCSIBlockReq *r = opaque;
-    printf("scsi_block_dma_readv\n");
+    //printf("scsi_block_dma_readv\n");
     return scsi_block_do_sgio(r, offset, iov,
                               SG_DXFER_FROM_DEV, cb, cb_opaque);
 }

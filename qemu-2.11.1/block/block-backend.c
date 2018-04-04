@@ -1484,6 +1484,7 @@ BlockAIOCB *blk_aio_ioctl(BlockBackend *blk, unsigned long int req, void *buf,
     };
     qemu_iovec_init_external(&qiov, &iov, 1);
 
+    printf("blk_aio_ioctl\n");
     return blk_aio_prwv(blk, req, 0, &qiov, blk_aio_ioctl_entry, 0, cb, opaque);
 }
 
