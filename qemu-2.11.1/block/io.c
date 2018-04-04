@@ -868,6 +868,8 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
         return drv->bdrv_co_preadv(bs, offset, bytes, qiov, flags);
     }
 
+    printf("bdrv_driver_preadv\n");
+
     sector_num = offset >> BDRV_SECTOR_BITS;
     nb_sectors = bytes >> BDRV_SECTOR_BITS;
 
@@ -876,6 +878,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     assert((bytes >> BDRV_SECTOR_BITS) <= BDRV_REQUEST_MAX_SECTORS);
 
     if (drv->bdrv_co_readv) {
+        printf("drv->bdrv_co_readv\n");
         return drv->bdrv_co_readv(bs, sector_num, nb_sectors, qiov);
     } else {
         BlockAIOCB *acb;
@@ -883,6 +886,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
             .coroutine = qemu_coroutine_self(),
         };
 
+        printf("opposite\n");
         acb = bs->drv->bdrv_aio_readv(bs, sector_num, qiov, nb_sectors,
                                       bdrv_co_io_em_complete, &co);
         if (acb == NULL) {

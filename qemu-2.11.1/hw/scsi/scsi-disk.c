@@ -2893,7 +2893,7 @@ BlockAIOCB *scsi_dma_readv(int64_t offset, QEMUIOVector *iov,
 {
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
-    printf("scsi_dma_readv\n");
+    //printf("scsi_dma_readv\n");
     return blk_aio_preadv(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 
