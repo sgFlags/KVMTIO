@@ -2748,6 +2748,7 @@ static BlockAIOCB *scsi_block_dma_readv(int64_t offset,
                                         void *opaque)
 {
     SCSIBlockReq *r = opaque;
+    printf("scsi_block_dma_readv\n");
     return scsi_block_do_sgio(r, offset, iov,
                               SG_DXFER_FROM_DEV, cb, cb_opaque);
 }
@@ -2892,6 +2893,7 @@ BlockAIOCB *scsi_dma_readv(int64_t offset, QEMUIOVector *iov,
 {
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
+    printf("scsi_dma_readv\n");
     return blk_aio_preadv(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 
@@ -2902,6 +2904,7 @@ BlockAIOCB *scsi_dma_writev(int64_t offset, QEMUIOVector *iov,
 {
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
+
     return blk_aio_pwritev(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 
