@@ -863,12 +863,12 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     if (!drv) {
         return -ENOMEDIUM;
     }
+    printf("bdrv_driver_preadv\n");
 
     if (drv->bdrv_co_preadv) {
         return drv->bdrv_co_preadv(bs, offset, bytes, qiov, flags);
     }
 
-    printf("bdrv_driver_preadv\n");
 
     sector_num = offset >> BDRV_SECTOR_BITS;
     nb_sectors = bytes >> BDRV_SECTOR_BITS;
@@ -1136,7 +1136,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
      * passthrough flags.  */
     assert(!(flags & ~(BDRV_REQ_NO_SERIALISING | BDRV_REQ_COPY_ON_READ)));
 
-    printf("bdrv_aligned_preadv\n");
+    //printf("bdrv_aligned_preadv\n");
     /* Handle Copy on Read and associated serialisation */
     if (flags & BDRV_REQ_COPY_ON_READ) {
         /* If we touch the same cluster it counts as an overlap.  This
@@ -1154,6 +1154,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
     if (flags & BDRV_REQ_COPY_ON_READ) {
         int64_t pnum;
 
+        printf("enter copy_on_read\n");
         ret = bdrv_is_allocated(bs, offset, bytes, &pnum);
         if (ret < 0) {
             goto out;
@@ -1232,7 +1233,7 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
         return -ENOMEDIUM;
     }
 
-    printf("bdrv_co_preadv\n");
+    //printf("bdrv_co_preadv\n");
     ret = bdrv_check_byte_request(bs, offset, bytes);
     if (ret < 0) {
         return ret;
