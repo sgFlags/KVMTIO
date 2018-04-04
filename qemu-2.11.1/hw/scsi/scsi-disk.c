@@ -342,6 +342,7 @@ static void scsi_do_read(SCSIDiskReq *r, int ret)
     scsi_req_ref(&r->req);
 
     if (r->req.sg) {
+        printf("in sg\n");
         dma_acct_start(s->qdev.conf.blk, &r->acct, r->req.sg, BLOCK_ACCT_READ);
         r->req.resid -= r->req.sg->size;
         r->req.aiocb = dma_blk_io(blk_get_aio_context(s->qdev.conf.blk),
@@ -350,6 +351,7 @@ static void scsi_do_read(SCSIDiskReq *r, int ret)
                                   sdc->dma_readv, r, scsi_dma_complete, r,
                                   DMA_DIRECTION_FROM_DEVICE);
     } else {
+        printf("not in sg!!!!!!!!!!!!!!!!\n");
         scsi_init_iovec(r, SCSI_DMA_BUF_SIZE);
         block_acct_start(blk_get_stats(s->qdev.conf.blk), &r->acct,
                          r->qiov.size, BLOCK_ACCT_READ);
@@ -419,7 +421,7 @@ static void scsi_read_data(SCSIRequest *req)
                          BLOCK_ACCT_FLUSH);
         r->req.aiocb = blk_aio_flush(s->qdev.conf.blk, scsi_do_read_cb, r);
     } else {
-        printf("scsi_do_read\n");
+        //printf("scsi_do_read\n");
         scsi_do_read(r, 0);
     }
 }
@@ -2168,6 +2170,7 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
 
     command = buf[0];
 
+    //printf("command is %d\n", command);
     //printf("scsi_disk_dma_command\n");
 
     if (!blk_is_available(s->qdev.conf.blk)) {
