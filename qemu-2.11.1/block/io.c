@@ -1233,7 +1233,7 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
         return -ENOMEDIUM;
     }
 
-    //printf("bdrv_co_preadv\n");
+    printf("bdrv_co_preadv\n");
     ret = bdrv_check_byte_request(bs, offset, bytes);
     if (ret < 0) {
         return ret;

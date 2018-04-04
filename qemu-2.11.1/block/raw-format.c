@@ -178,6 +178,7 @@ static int coroutine_fn raw_co_preadv(BlockDriverState *bs, uint64_t offset,
     }
     offset += s->offset;
 
+    printf("raw_co_preadv\n");
     BLKDBG_EVENT(bs->file, BLKDBG_READ_AIO);
     return bdrv_co_preadv(bs->file, offset, bytes, qiov, flags);
 }
