@@ -598,7 +598,7 @@ bool virtio_scsi_handle_cmd_vq(VirtIOSCSI *s, VirtQueue *vq)
 
     QTAILQ_HEAD(, VirtIOSCSIReq) reqs = QTAILQ_HEAD_INITIALIZER(reqs);
 
-    printf("in virtio_scsi_handle_cmd_vq, outside loop\n");
+    //printf("in virtio_scsi_handle_cmd_vq, outside loop\n");
     do {
         virtio_queue_set_notification(vq, 0);
 
