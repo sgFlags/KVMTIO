@@ -1102,6 +1102,7 @@ int coroutine_fn blk_co_preadv(BlockBackend *blk, int64_t offset,
                 bytes, false);
     }
 
+    printf("blk_co_preadv, offset is %d, bytes is %d\n", offset, bytes);
     ret = bdrv_co_preadv(blk->root, offset, bytes, qiov, flags);
     bdrv_dec_in_flight(bs);
     return ret;

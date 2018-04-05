@@ -863,7 +863,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     if (!drv) {
         return -ENOMEDIUM;
     }
-    printf("bdrv_driver_preadv\n");
+    printf("bdrv_driver_preadv offset is %d, bytes is %d\n", offset, bytes);
 
     if (drv->bdrv_co_preadv) {
         return drv->bdrv_co_preadv(bs, offset, bytes, qiov, flags);
@@ -1173,6 +1173,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
         goto out;
     }
 
+    printf("bdrv_aligned_preadv, bytes is %d, offset is %d\n", bytes, offset);
     max_bytes = ROUND_UP(MAX(0, total_bytes - offset), align);
     if (bytes <= max_bytes && bytes <= max_transfer) {
         ret = bdrv_driver_preadv(bs, offset, bytes, qiov, 0);
@@ -1233,7 +1234,7 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
         return -ENOMEDIUM;
     }
 
-    printf("bdrv_co_preadv\n");
+    printf("bdrv_co_preadv, offset is %d, bytes is %d\n", offset, bytes);
     ret = bdrv_check_byte_request(bs, offset, bytes);
     if (ret < 0) {
         return ret;
