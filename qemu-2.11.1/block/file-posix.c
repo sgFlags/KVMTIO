@@ -1563,6 +1563,8 @@ static int coroutine_fn raw_co_prw(BlockDriverState *bs, uint64_t offset,
 {
     BDRVRawState *s = bs->opaque;
 
+    printf("another raw!!!\n");
+
     if (fd_open(bs) < 0)
         return -EIO;
 
