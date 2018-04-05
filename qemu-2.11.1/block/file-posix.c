@@ -1463,6 +1463,7 @@ static int aio_worker(void *arg)
     RawPosixAIOData *aiocb = arg;
     ssize_t ret = 0;
 
+    printf("in aio_worker, aiocb->aio_type & is %d\n", (aiocb->aio_type & QEMU_AIO_TYPE_MASK));
     switch (aiocb->aio_type & QEMU_AIO_TYPE_MASK) {
     case QEMU_AIO_READ:
         ret = handle_aiocb_rw(aiocb);
