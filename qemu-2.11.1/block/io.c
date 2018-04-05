@@ -866,6 +866,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     printf("bdrv_driver_preadv offset is %d, bytes is %d\n", offset, bytes);
 
     if (drv->bdrv_co_preadv) {
+        printf("enter if\n");
         return drv->bdrv_co_preadv(bs, offset, bytes, qiov, flags);
     }
 
