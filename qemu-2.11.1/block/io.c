@@ -863,7 +863,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     if (!drv) {
         return -ENOMEDIUM;
     }
-    printf("bdrv_driver_preadv offset is %d, bytes is %d\n", offset, bytes);
+    //printf("bdrv_driver_preadv offset is %d, bytes is %d\n", offset, bytes);
 
     if (drv->bdrv_co_preadv) {
         printf("enter if\n");
@@ -1235,7 +1235,7 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
         return -ENOMEDIUM;
     }
 
-    printf("bdrv_co_preadv, offset is %d, bytes is %d\n", offset, bytes);
+    //printf("bdrv_co_preadv, offset is %d, bytes is %d\n", offset, bytes);
     ret = bdrv_check_byte_request(bs, offset, bytes);
     if (ret < 0) {
         return ret;

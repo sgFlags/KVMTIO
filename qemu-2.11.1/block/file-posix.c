@@ -1563,7 +1563,7 @@ static int coroutine_fn raw_co_prw(BlockDriverState *bs, uint64_t offset,
 {
     BDRVRawState *s = bs->opaque;
 
-    printf("another raw!!!\n");
+    //printf("another raw!!!\n");
 
     if (fd_open(bs) < 0)
         return -EIO;
@@ -1575,6 +1575,7 @@ static int coroutine_fn raw_co_prw(BlockDriverState *bs, uint64_t offset,
      * to copy the buffer.
      */
     if (s->needs_alignment) {
+        printf("in if of raw_co_prw\n"); 
         if (!bdrv_qiov_is_aligned(bs, qiov)) {
             type |= QEMU_AIO_MISALIGNED;
 #ifdef CONFIG_LINUX_AIO
@@ -1586,6 +1587,7 @@ static int coroutine_fn raw_co_prw(BlockDriverState *bs, uint64_t offset,
         }
     }
 
+    printf("before paio_submit_co\n");
     return paio_submit_co(bs, s->fd, offset, qiov, bytes, type);
 }
 
