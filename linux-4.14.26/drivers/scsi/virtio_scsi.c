@@ -501,7 +501,7 @@ static void virtio_scsi_init_hdr(struct virtio_device *vdev,
 	cmd->task_attr = VIRTIO_SCSI_S_SIMPLE;
 	cmd->prio = 0;
 	cmd->crn = 0;
-    cmd->tag_prio = sc->tag_prio;
+    //cmd->tag_prio = sc->tag_prio;
 }
 
 #ifdef CONFIG_BLK_DEV_INTEGRITY
