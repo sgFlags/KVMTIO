@@ -1803,7 +1803,8 @@ static void scsi_request_fn(struct request_queue *q)
 			continue;
 		}
 
-        prio = atomic_read(&req->my_prio);
+        //prio = atomic_read(&req->my_prio);
+        prio = 233;
         //printk("in scsi_fn, prio is %d\n", prio);
 
 		if (!scsi_dev_queue_ready(q, sdev))
@@ -1854,6 +1855,10 @@ static void scsi_request_fn(struct request_queue *q)
 		else
 			cmd->flags &= ~SCMD_TAGGED;
 
+
+        /* e6998 */
+        cmd->tag_prio = prio;
+
 		/*
 		 * Finally, initialize any error handling parameters, and set up
 		 * the timers for timeouts.
@@ -1864,6 +1869,7 @@ static void scsi_request_fn(struct request_queue *q)
 		 * Dispatch the command to the low-level driver.
 		 */
 		cmd->scsi_done = scsi_done;
+
 		rtn = scsi_dispatch_cmd(cmd);
 		if (rtn) {
 			scsi_queue_insert(cmd, rtn);

@@ -544,6 +544,7 @@ static int virtscsi_queuecommand(struct virtio_scsi *vscsi,
 	/* TODO: check feature bit and fail if unsupported?  */
 	BUG_ON(sc->sc_data_direction == DMA_BIDIRECTIONAL);
 
+
 	dev_dbg(&sc->device->sdev_gendev,
 		"cmd %p CDB: %#02x\n", sc, sc->cmnd[0]);
 
@@ -584,6 +585,7 @@ static int virtscsi_queuecommand_single(struct Scsi_Host *sh,
 				scsi_target(sc->device)->hostdata;
 
 	atomic_inc(&tgt->reqs);
+    printk("in virtscsi_queuecommand_single, prio is %d\n", sc->tag_prio);
 	return virtscsi_queuecommand(vscsi, &vscsi->req_vqs[0], sc);
 }
 
@@ -641,6 +643,7 @@ static int virtscsi_queuecommand_multi(struct Scsi_Host *sh,
 				scsi_target(sc->device)->hostdata;
 	struct virtio_scsi_vq *req_vq;
 
+    printk("in virtscsi_queuecommand_single, prio is %d\n", sc->tag_prio);
 	if (shost_use_blk_mq(sh))
 		req_vq = virtscsi_pick_vq_mq(vscsi, sc);
 	else

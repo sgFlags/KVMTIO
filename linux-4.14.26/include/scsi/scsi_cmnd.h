@@ -146,6 +146,9 @@ struct scsi_cmnd {
 	int flags;		/* Command flags */
 
 	unsigned char tag;	/* SCSI-II queued command tag */
+
+    /* e6998 */
+    unsigned int tag_prio;
 };
 
 /*
