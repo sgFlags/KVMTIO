@@ -1463,7 +1463,7 @@ static int aio_worker(void *arg)
     RawPosixAIOData *aiocb = arg;
     ssize_t ret = 0;
 
-    printf("in aio_worker, aiocb->aio_type & is %d\n", (aiocb->aio_type & QEMU_AIO_TYPE_MASK));
+    //printf("in aio_worker, aiocb->aio_type & is %d\n", (aiocb->aio_type & QEMU_AIO_TYPE_MASK));
     switch (aiocb->aio_type & QEMU_AIO_TYPE_MASK) {
     case QEMU_AIO_READ:
         ret = handle_aiocb_rw(aiocb);
@@ -1576,7 +1576,7 @@ static int coroutine_fn raw_co_prw(BlockDriverState *bs, uint64_t offset,
      * to copy the buffer.
      */
     if (s->needs_alignment) {
-        printf("in if of raw_co_prw\n"); 
+        //printf("in if of raw_co_prw\n"); 
         if (!bdrv_qiov_is_aligned(bs, qiov)) {
             type |= QEMU_AIO_MISALIGNED;
 #ifdef CONFIG_LINUX_AIO
@@ -1588,7 +1588,7 @@ static int coroutine_fn raw_co_prw(BlockDriverState *bs, uint64_t offset,
         }
     }
 
-    printf("before paio_submit_co\n");
+    //printf("before paio_submit_co\n");
     return paio_submit_co(bs, s->fd, offset, qiov, bytes, type);
 }
 
