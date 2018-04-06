@@ -2168,11 +2168,13 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     uint32_t len;
     uint8_t command;
     uint8_t prio;
+    int i;
 
     command = buf[0];
 
     prio = buf[10];
-    printf("prio is %d\n", prio);
+    for (i = 0; i < 11; i++)
+        printf("buf[%d] is %d\n", i, buf[i]);
 
     if (!blk_is_available(s->qdev.conf.blk)) {
         scsi_check_condition(r, SENSE_CODE(NO_MEDIUM));
