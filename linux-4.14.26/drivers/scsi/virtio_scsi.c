@@ -501,6 +501,7 @@ static void virtio_scsi_init_hdr(struct virtio_device *vdev,
 	cmd->task_attr = VIRTIO_SCSI_S_SIMPLE;
 	cmd->prio = 0;
 	cmd->crn = 0;
+    cmd->tag_prio = sc->tag_prio;
 }
 
 #ifdef CONFIG_BLK_DEV_INTEGRITY
@@ -585,7 +586,7 @@ static int virtscsi_queuecommand_single(struct Scsi_Host *sh,
 				scsi_target(sc->device)->hostdata;
 
 	atomic_inc(&tgt->reqs);
-    printk("in virtscsi_queuecommand_single, prio is %d\n", sc->tag_prio);
+    //printk("in virtscsi_queuecommand_single, prio is %d\n", sc->tag_prio);
 	return virtscsi_queuecommand(vscsi, &vscsi->req_vqs[0], sc);
 }
 
@@ -643,7 +644,7 @@ static int virtscsi_queuecommand_multi(struct Scsi_Host *sh,
 				scsi_target(sc->device)->hostdata;
 	struct virtio_scsi_vq *req_vq;
 
-    printk("in virtscsi_queuecommand_single, prio is %d\n", sc->tag_prio);
+    //printk("in virtscsi_queuecommand_single, prio is %d\n", sc->tag_prio);
 	if (shost_use_blk_mq(sh))
 		req_vq = virtscsi_pick_vq_mq(vscsi, sc);
 	else
