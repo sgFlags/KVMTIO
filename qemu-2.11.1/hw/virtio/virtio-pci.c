@@ -300,6 +300,7 @@ static void virtio_ioport_write(void *opaque, uint32_t addr, uint32_t val)
     VirtIODevice *vdev = virtio_bus_get_device(&proxy->bus);
     hwaddr pa;
 
+    printf("in virtio_ioport_write\n");
     switch (addr) {
     case VIRTIO_PCI_GUEST_FEATURES:
         /* Guest does not negotiate properly?  We have to assume nothing. */
@@ -532,11 +533,14 @@ void virtio_address_space_write(VirtIOPCIProxy *proxy, hwaddr addr,
      * As address is under guest control, handle illegal values.
      */
     addr &= ~(len - 1);
+    
+    printf("virtio_address_space_write\n");
 
     mr = virtio_address_space_lookup(proxy, &addr, len);
     if (!mr) {
         return;
     }
+
 
     /* Make sure caller aligned buf properly */
     assert(!(((uintptr_t)buf) & (len - 1)));
@@ -564,6 +568,8 @@ virtio_address_space_read(VirtIOPCIProxy *proxy, hwaddr addr,
 {
     uint64_t val;
     MemoryRegion *mr;
+
+    printf("virtio_address_space_read\n");
 
     /* address_space_* APIs assume an aligned address.
      * As address is under guest control, handle illegal values.
@@ -1151,6 +1157,7 @@ static uint64_t virtio_pci_common_read(void *opaque, hwaddr addr,
     uint32_t val = 0;
     int i;
 
+    printf("virtio_pci_common_read\n");
     switch (addr) {
     case VIRTIO_PCI_COMMON_DFSELECT:
         val = proxy->dfselect;
@@ -1233,6 +1240,8 @@ static void virtio_pci_common_write(void *opaque, hwaddr addr,
 {
     VirtIOPCIProxy *proxy = opaque;
     VirtIODevice *vdev = virtio_bus_get_device(&proxy->bus);
+
+    printf("virtio_pci_common_write\n");
 
     switch (addr) {
     case VIRTIO_PCI_COMMON_DFSELECT:
@@ -1329,6 +1338,7 @@ static void virtio_pci_common_write(void *opaque, hwaddr addr,
 static uint64_t virtio_pci_notify_read(void *opaque, hwaddr addr,
                                        unsigned size)
 {
+    printf("virtio_pci_notify_read\n");
     return 0;
 }
 
@@ -1338,6 +1348,8 @@ static void virtio_pci_notify_write(void *opaque, hwaddr addr,
     VirtIODevice *vdev = opaque;
     VirtIOPCIProxy *proxy = VIRTIO_PCI(DEVICE(vdev)->parent_bus->parent);
     unsigned queue = addr / virtio_pci_queue_mem_mult(proxy);
+
+    printf("virtio_pci_notify_write\n");
 
     if (queue < VIRTIO_QUEUE_MAX) {
         virtio_queue_notify(vdev, queue);

@@ -118,6 +118,8 @@ static int virtio_scsi_parse_req(VirtIOSCSIReq *req,
     VirtIODevice *vdev = (VirtIODevice *) req->dev;
     size_t in_size, out_size;
 
+    //printf("in virtio_scsi_parse_req!!!!!\n");
+
     if (iov_to_buf(req->elem.out_sg, req->elem.out_num, 0,
                    &req->req, req_size) < req_size) {
         return -EINVAL;
@@ -203,6 +205,7 @@ static void *virtio_scsi_load_request(QEMUFile *f, SCSIRequest *sreq)
     VirtIOSCSIReq *req;
     uint32_t n;
 
+    printf("in virtio_scsi_load_request\n");
     qemu_get_be32s(f, &n);
     assert(n < vs->conf.num_queues);
     req = qemu_get_virtqueue_element(vdev, f,
@@ -395,6 +398,7 @@ static void virtio_scsi_handle_ctrl_req(VirtIOSCSI *s, VirtIOSCSIReq *req)
         return;
     }
 
+    printf("in virtio_scsi_handle_ctrl_req\n");
     virtio_tswap32s(vdev, &type);
     if (type == VIRTIO_SCSI_T_TMF) {
         if (virtio_scsi_parse_req(req, sizeof(VirtIOSCSICtrlTMFReq),
@@ -438,7 +442,8 @@ bool virtio_scsi_handle_ctrl_vq(VirtIOSCSI *s, VirtQueue *vq)
 static void virtio_scsi_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
 {
     VirtIOSCSI *s = (VirtIOSCSI *)vdev;
-
+    
+    printf("in virtio_scsi_handle_ctrl!!!!!!!!!!!!!!!!!!!\n");
     if (s->ctx) {
         virtio_device_start_ioeventfd(vdev);
         if (!s->dataplane_fenced) {
@@ -538,6 +543,8 @@ static int virtio_scsi_handle_cmd_req_prepare(VirtIOSCSI *s, VirtIOSCSIReq *req)
     SCSIDevice *d;
     int rc;
 
+    //printf("in virtio_scsi_handle_cmd_req_prepare\n");
+
     rc = virtio_scsi_parse_req(req, sizeof(VirtIOSCSICmdReq) + vs->cdb_size,
                                sizeof(VirtIOSCSICmdResp) + vs->sense_size);
     if (rc < 0) {
@@ -591,6 +598,7 @@ bool virtio_scsi_handle_cmd_vq(VirtIOSCSI *s, VirtQueue *vq)
 
     QTAILQ_HEAD(, VirtIOSCSIReq) reqs = QTAILQ_HEAD_INITIALIZER(reqs);
 
+    //printf("in virtio_scsi_handle_cmd_vq, outside loop\n");
     do {
         virtio_queue_set_notification(vq, 0);
 
@@ -625,6 +633,8 @@ static void virtio_scsi_handle_cmd(VirtIODevice *vdev, VirtQueue *vq)
 {
     /* use non-QOM casts in the data path */
     VirtIOSCSI *s = (VirtIOSCSI *)vdev;
+
+    printf("in virtio_scsi_handle_cmd!!!!!!!!!!!!!!!!!!!!\n");
 
     if (s->ctx) {
         virtio_device_start_ioeventfd(vdev);
@@ -710,6 +720,7 @@ void virtio_scsi_push_event(VirtIOSCSI *s, SCSIDevice *dev,
         return;
     }
 
+    printf("in virtio_scsi_push_event\n");
     req = virtio_scsi_pop_req(s, vs->event_vq);
     if (!req) {
         s->events_dropped = true;
@@ -758,6 +769,7 @@ static void virtio_scsi_handle_event(VirtIODevice *vdev, VirtQueue *vq)
 {
     VirtIOSCSI *s = VIRTIO_SCSI(vdev);
 
+    printf("in virtio_scsi_handle_event!!!!!!!!!!!!!!!!\n");
     if (s->ctx) {
         virtio_device_start_ioeventfd(vdev);
         if (!s->dataplane_fenced) {
@@ -880,6 +892,7 @@ static void virtio_scsi_device_realize(DeviceState *dev, Error **errp)
     VirtIOSCSI *s = VIRTIO_SCSI(dev);
     Error *err = NULL;
 
+    printf("virtio_scsi_device_realize!!\n");
     virtio_scsi_common_realize(dev,
                                virtio_scsi_handle_ctrl,
                                virtio_scsi_handle_event,

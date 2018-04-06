@@ -315,11 +315,13 @@ static inline int virtqueue_add(struct virtqueue *_vq,
 		/* Set up rest to use this indirect table. */
 		i = 0;
 		descs_used = 1;
+        //printk("support indirect!!\n");
 	} else {
 		indirect = false;
 		desc = vq->vring.desc;
 		i = head;
 		descs_used = total_sg;
+        //printk("unsupport indirect!!!\n");
 	}
 
 	if (vq->vq.num_free < descs_used) {

@@ -239,6 +239,8 @@ struct request {
 
 	/* for bidi */
 	struct request *next_rq;
+
+    atomic_t my_prio;
 };
 
 static inline bool blk_op_is_scsi(unsigned int op)

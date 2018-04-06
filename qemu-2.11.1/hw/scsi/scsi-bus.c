@@ -845,6 +845,7 @@ int32_t scsi_req_enqueue(SCSIRequest *req)
 {
     int32_t rc;
 
+    //printf("scsi_req_enqueue\n");
     assert(!req->retry);
     scsi_req_enqueue_internal(req);
     scsi_req_ref(req);
@@ -1349,6 +1350,7 @@ void scsi_req_continue(SCSIRequest *req)
         trace_scsi_req_continue_canceled(req->dev->id, req->lun, req->tag);
         return;
     }
+    //printf("scsi_req_continue\n");
     trace_scsi_req_continue(req->dev->id, req->lun, req->tag);
     if (req->cmd.mode == SCSI_XFER_TO_DEV) {
         req->ops->write_data(req);

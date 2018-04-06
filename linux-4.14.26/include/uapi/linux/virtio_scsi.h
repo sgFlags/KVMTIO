@@ -48,6 +48,7 @@ struct virtio_scsi_cmd_req {
 	__u8 prio;		/* SAM command priority field */
 	__u8 crn;
 	__u8 cdb[VIRTIO_SCSI_CDB_SIZE];
+    //__u8 tag_prio;
 } __attribute__((packed));
 
 /* SCSI command request, followed by protection information */

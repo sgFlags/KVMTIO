@@ -55,6 +55,7 @@ static bool virtio_scsi_data_plane_handle_cmd(VirtIODevice *vdev,
     bool progress;
     VirtIOSCSI *s = VIRTIO_SCSI(vdev);
 
+    //printf("in virtio_scsi_data_plane_handle_cmd\n");
     virtio_scsi_acquire(s);
     assert(s->ctx && s->dataplane_started);
     progress = virtio_scsi_handle_cmd_vq(s, vq);

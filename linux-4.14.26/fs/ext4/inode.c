@@ -3327,14 +3327,19 @@ static int ext4_readpage(struct file *file, struct page *page)
 {
 	int ret = -EAGAIN;
 	struct inode *inode = page->mapping->host;
+    /* e6998 */
+    unsigned int prio = file->prio;
 
+    file->prio = 0;
 	trace_ext4_readpage(page);
 
 	if (ext4_has_inline_data(inode))
 		ret = ext4_readpage_inline(inode, page);
 
+    //if (prio != 0)
+      //  printk("in ext4_readpage, prio is %d\n", prio);
 	if (ret == -EAGAIN)
-		return ext4_mpage_readpages(page->mapping, NULL, page, 1);
+		return ext4_mpage_readpages(page->mapping, NULL, page, 1, prio);
 
 	return ret;
 }
@@ -3344,12 +3349,18 @@ ext4_readpages(struct file *file, struct address_space *mapping,
 		struct list_head *pages, unsigned nr_pages)
 {
 	struct inode *inode = mapping->host;
+    /* e6998 */
+    unsigned int prio = file->prio;
 
+    file->prio = 0;
+
+    //if (prio != 0)
+      //  printk("in ext4_readpages, prio is %d\n", prio);
 	/* If the file has inline data, no need to do readpages. */
 	if (ext4_has_inline_data(inode))
 		return 0;
 
-	return ext4_mpage_readpages(mapping, pages, NULL, nr_pages);
+	return ext4_mpage_readpages(mapping, pages, NULL, nr_pages, prio);
 }
 
 static void ext4_invalidatepage(struct page *page, unsigned int offset,

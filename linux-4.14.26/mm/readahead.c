@@ -117,9 +117,12 @@ static int read_pages(struct address_space *mapping, struct file *filp,
 
 	blk_start_plug(&plug);
 
-    printk("read pages!! prio is %d\n", prio);
+   // printk("read pages!! prio is %d\n", prio);
 
 	if (mapping->a_ops->readpages) {
+        /* e6998 */
+        filp->prio = prio;
+
 		ret = mapping->a_ops->readpages(filp, mapping, pages, nr_pages);
 		/* Clean up the remaining pages */
 		put_pages_list(pages);
@@ -129,8 +132,11 @@ static int read_pages(struct address_space *mapping, struct file *filp,
 	for (page_idx = 0; page_idx < nr_pages; page_idx++) {
 		struct page *page = lru_to_page(pages);
 		list_del(&page->lru);
-		if (!add_to_page_cache_lru(page, mapping, page->index, gfp))
+		if (!add_to_page_cache_lru(page, mapping, page->index, gfp)) {
+            /* e6998 */
+            filp->prio = prio;
 			mapping->a_ops->readpage(filp, page);
+        }
 		put_page(page);
 	}
 	ret = 0;
@@ -198,7 +204,7 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	 * will then handle the error.
 	 */
 	if (ret)
-		read_pages(mapping, filp, &page_pool, ret, gfp_mask);
+		read_pages(mapping, filp, &page_pool, ret, gfp_mask, -1);
 	BUG_ON(!list_empty(&page_pool));
 out:
 	return ret;
@@ -442,7 +448,8 @@ ondemand_readahead(struct address_space *mapping,
 
     /* e6998 */
     unsigned int prio = ra->prio;
-
+    
+    //printk("ondemand_readahead, prio is %d\n", prio);
 	/*
 	 * If the request exceeds the readahead window, allow the read to
 	 * be up to the optimal hardware IO size

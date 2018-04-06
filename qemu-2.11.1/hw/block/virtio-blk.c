@@ -222,7 +222,7 @@ static int virtio_blk_handle_scsi_req(VirtIOBlockReq *req)
     VirtIOBlockIoctlReq *ioctl_req;
     BlockAIOCB *acb;
 #endif
-
+    printf("in virtio_blk_handle_scsi_req\n");
     /*
      * We require at least one output segment each for the virtio_blk_outhdr
      * and the SCSI command block.

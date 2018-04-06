@@ -1613,10 +1613,25 @@ void blk_put_request(struct request *req)
 }
 EXPORT_SYMBOL(blk_put_request);
 
+/* w6998 */
+unsigned int choose_tio_prio(unsigned int prioa, unsigned int priob)
+{
+    int prio_a = 255;
+    int prio_b = 255;
+
+    if (prioa <= 255 && prioa > 1)
+        prio_a = prioa;
+    if (priob <= 255 && priob > 1)
+        prio_b = priob;
+    return prio_a > prio_b ? prio_b : prio_a;
+}
+
 bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 			    struct bio *bio)
 {
 	const int ff = bio->bi_opf & REQ_FAILFAST_MASK;
+    /* e6998 */
+    unsigned int prio;
 
 	if (!ll_back_merge_fn(q, req, bio))
 		return false;
@@ -1631,6 +1646,11 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
 
+    /* e6998 */
+    prio = choose_tio_prio(atomic_read(&req->my_prio), atomic_read(&bio->prio));
+    atomic_set(&req->my_prio, prio);
+    //printk("in bio_attenpt_back_merge, request bio is %d\n", prio);
+
 	blk_account_io_start(req, false);
 	return true;
 }
@@ -1639,6 +1659,8 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 			     struct bio *bio)
 {
 	const int ff = bio->bi_opf & REQ_FAILFAST_MASK;
+    /* e6998 */
+    unsigned int prio;
 
 	if (!ll_front_merge_fn(q, req, bio))
 		return false;
@@ -1654,6 +1676,11 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 	req->__sector = bio->bi_iter.bi_sector;
 	req->__data_len += bio->bi_iter.bi_size;
 	req->ioprio = ioprio_best(req->ioprio, bio_prio(bio));
+   
+    /* e6998 */
+    prio = choose_tio_prio(atomic_read(&req->my_prio), atomic_read(&bio->prio));
+    atomic_set(&req->my_prio, prio);
+    //printk("in bio_attenpt_front_merge, request bio is %d\n", prio);
 
 	blk_account_io_start(req, false);
 	return true;
@@ -1788,7 +1815,13 @@ out:
 void blk_init_request_from_bio(struct request *req, struct bio *bio)
 {
 	struct io_context *ioc = rq_ioc(bio);
+    /* e6998 */
+    unsigned int tag_prio = atomic_read(&bio->prio);
 
+    if (tag_prio > 0 && tag_prio <= 255)
+        atomic_set(&req->my_prio, tag_prio);
+    else
+        atomic_set(&req->my_prio, 255);
 	if (bio->bi_opf & REQ_RAHEAD)
 		req->cmd_flags |= REQ_FAILFAST_MASK;
 
@@ -1811,6 +1844,8 @@ static blk_qc_t blk_queue_bio(struct request_queue *q, struct bio *bio)
 	struct request *req, *free;
 	unsigned int request_count = 0;
 	unsigned int wb_acct;
+    /* e6998 */
+    unsigned int tag_prio;
 
 	/*
 	 * low level driver can indicate that it wants pages above a
@@ -1884,6 +1919,10 @@ get_rq:
 		bio_endio(bio);
 		goto out_unlock;
 	}
+
+    /* e6998 test */
+    tag_prio = atomic_read(&bio->prio);
+   // printk("request default prio is %d\n", tag_prio);
 
 	wbt_track(&req->issue_stat, wb_acct);
 
@@ -2273,6 +2312,7 @@ blk_qc_t submit_bio(struct bio *bio)
 	 * If it's a regular read/write or a barrier with data attached,
 	 * go through the normal accounting stuff before submission.
 	 */
+    //printk("submit_bio\n");
 	if (bio_has_data(bio)) {
 		unsigned int count;
 

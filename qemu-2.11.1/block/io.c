@@ -863,10 +863,13 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     if (!drv) {
         return -ENOMEDIUM;
     }
+    //printf("bdrv_driver_preadv offset is %d, bytes is %d\n", offset, bytes);
 
     if (drv->bdrv_co_preadv) {
+        //printf("enter if\n");
         return drv->bdrv_co_preadv(bs, offset, bytes, qiov, flags);
     }
+
 
     sector_num = offset >> BDRV_SECTOR_BITS;
     nb_sectors = bytes >> BDRV_SECTOR_BITS;
@@ -876,6 +879,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     assert((bytes >> BDRV_SECTOR_BITS) <= BDRV_REQUEST_MAX_SECTORS);
 
     if (drv->bdrv_co_readv) {
+        printf("drv->bdrv_co_readv\n");
         return drv->bdrv_co_readv(bs, sector_num, nb_sectors, qiov);
     } else {
         BlockAIOCB *acb;
@@ -883,6 +887,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
             .coroutine = qemu_coroutine_self(),
         };
 
+        printf("opposite\n");
         acb = bs->drv->bdrv_aio_readv(bs, sector_num, qiov, nb_sectors,
                                       bdrv_co_io_em_complete, &co);
         if (acb == NULL) {
@@ -1132,6 +1137,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
      * passthrough flags.  */
     assert(!(flags & ~(BDRV_REQ_NO_SERIALISING | BDRV_REQ_COPY_ON_READ)));
 
+    //printf("bdrv_aligned_preadv\n");
     /* Handle Copy on Read and associated serialisation */
     if (flags & BDRV_REQ_COPY_ON_READ) {
         /* If we touch the same cluster it counts as an overlap.  This
@@ -1149,6 +1155,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
     if (flags & BDRV_REQ_COPY_ON_READ) {
         int64_t pnum;
 
+        printf("enter copy_on_read\n");
         ret = bdrv_is_allocated(bs, offset, bytes, &pnum);
         if (ret < 0) {
             goto out;
@@ -1167,6 +1174,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
         goto out;
     }
 
+    //printf("bdrv_aligned_preadv, bytes is %d, offset is %d\n", bytes, offset);
     max_bytes = ROUND_UP(MAX(0, total_bytes - offset), align);
     if (bytes <= max_bytes && bytes <= max_transfer) {
         ret = bdrv_driver_preadv(bs, offset, bytes, qiov, 0);
@@ -1227,6 +1235,7 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
         return -ENOMEDIUM;
     }
 
+    //printf("bdrv_co_preadv, offset is %d, bytes is %d\n", offset, bytes);
     ret = bdrv_check_byte_request(bs, offset, bytes);
     if (ret < 0) {
         return ret;
@@ -2649,6 +2658,7 @@ int bdrv_co_ioctl(BlockDriverState *bs, int req, void *buf)
     };
     BlockAIOCB *acb;
 
+    printf("bdrv_co_ioctl\n");
     bdrv_inc_in_flight(bs);
     if (!drv || (!drv->bdrv_aio_ioctl && !drv->bdrv_co_ioctl)) {
         co.ret = -ENOTSUP;

@@ -116,6 +116,9 @@ struct bio {
 	 * MUST obviously be kept at the very end of the bio.
 	 */
 	struct bio_vec		bi_inline_vecs[0];
+
+    /* e6998 */
+    atomic_t            prio;
 };
 
 #define BIO_RESET_BYTES		offsetof(struct bio, bi_max_vecs)

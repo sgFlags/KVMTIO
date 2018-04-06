@@ -1777,6 +1777,8 @@ static void scsi_request_fn(struct request_queue *q)
 	struct Scsi_Host *shost;
 	struct scsi_cmnd *cmd;
 	struct request *req;
+    /* e6998 */
+    unsigned int prio;
 
 	/*
 	 * To start with, we keep looping until the queue is empty, or until
@@ -1800,6 +1802,10 @@ static void scsi_request_fn(struct request_queue *q)
 			scsi_kill_request(req, q);
 			continue;
 		}
+
+        //prio = atomic_read(&req->my_prio);
+        prio = 233;
+        //printk("in scsi_fn, prio is %d\n", prio);
 
 		if (!scsi_dev_queue_ready(q, sdev))
 			break;
@@ -1849,6 +1855,10 @@ static void scsi_request_fn(struct request_queue *q)
 		else
 			cmd->flags &= ~SCMD_TAGGED;
 
+
+        /* e6998 */
+        cmd->tag_prio = prio;
+
 		/*
 		 * Finally, initialize any error handling parameters, and set up
 		 * the timers for timeouts.
@@ -1859,6 +1869,7 @@ static void scsi_request_fn(struct request_queue *q)
 		 * Dispatch the command to the low-level driver.
 		 */
 		cmd->scsi_done = scsi_done;
+
 		rtn = scsi_dispatch_cmd(cmd);
 		if (rtn) {
 			scsi_queue_insert(cmd, rtn);

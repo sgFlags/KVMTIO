@@ -342,6 +342,7 @@ static void scsi_do_read(SCSIDiskReq *r, int ret)
     scsi_req_ref(&r->req);
 
     if (r->req.sg) {
+        //printf("in sg\n");
         dma_acct_start(s->qdev.conf.blk, &r->acct, r->req.sg, BLOCK_ACCT_READ);
         r->req.resid -= r->req.sg->size;
         r->req.aiocb = dma_blk_io(blk_get_aio_context(s->qdev.conf.blk),
@@ -350,6 +351,7 @@ static void scsi_do_read(SCSIDiskReq *r, int ret)
                                   sdc->dma_readv, r, scsi_dma_complete, r,
                                   DMA_DIRECTION_FROM_DEVICE);
     } else {
+        printf("not in sg!!!!!!!!!!!!!!!!\n");
         scsi_init_iovec(r, SCSI_DMA_BUF_SIZE);
         block_acct_start(blk_get_stats(s->qdev.conf.blk), &r->acct,
                          r->qiov.size, BLOCK_ACCT_READ);
@@ -386,6 +388,8 @@ static void scsi_read_data(SCSIRequest *req)
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
     bool first;
 
+    //printf("scsi_read_data\n");
+
     DPRINTF("Read sector_count=%d\n", r->sector_count);
     if (r->sector_count == 0) {
         /* This also clears the sense buffer for REQUEST SENSE.  */
@@ -412,10 +416,12 @@ static void scsi_read_data(SCSIRequest *req)
     first = !r->started;
     r->started = true;
     if (first && r->need_fua_emulation) {
+        printf("in first and need_fua\n");
         block_acct_start(blk_get_stats(s->qdev.conf.blk), &r->acct, 0,
                          BLOCK_ACCT_FLUSH);
         r->req.aiocb = blk_aio_flush(s->qdev.conf.blk, scsi_do_read_cb, r);
     } else {
+        //printf("scsi_do_read\n");
         scsi_do_read(r, 0);
     }
 }
@@ -2743,6 +2749,7 @@ static BlockAIOCB *scsi_block_dma_readv(int64_t offset,
                                         void *opaque)
 {
     SCSIBlockReq *r = opaque;
+    //printf("scsi_block_dma_readv\n");
     return scsi_block_do_sgio(r, offset, iov,
                               SG_DXFER_FROM_DEV, cb, cb_opaque);
 }
@@ -2887,6 +2894,7 @@ BlockAIOCB *scsi_dma_readv(int64_t offset, QEMUIOVector *iov,
 {
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
+    //printf("scsi_dma_readv\n");
     return blk_aio_preadv(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 
@@ -2897,6 +2905,7 @@ BlockAIOCB *scsi_dma_writev(int64_t offset, QEMUIOVector *iov,
 {
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
+
     return blk_aio_pwritev(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 

@@ -506,6 +506,8 @@ static void handle_output(VirtIODevice *vdev, VirtQueue *vq)
         return;
     }
 
+    printf("handle_output\n");
+
     if (!port->throttled) {
         do_flush_queued_data(port, vq, vdev);
         return;

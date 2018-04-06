@@ -1102,6 +1102,7 @@ int coroutine_fn blk_co_preadv(BlockBackend *blk, int64_t offset,
                 bytes, false);
     }
 
+    //printf("blk_co_preadv, offset is %d, bytes is %d\n", offset, bytes);
     ret = bdrv_co_preadv(blk->root, offset, bytes, qiov, flags);
     bdrv_dec_in_flight(bs);
     return ret;
@@ -1297,8 +1298,10 @@ static BlockAIOCB *blk_aio_prwv(BlockBackend *blk, int64_t offset, int bytes,
     co = qemu_coroutine_create(co_entry, acb);
     bdrv_coroutine_enter(blk_bs(blk), co);
 
+    //printf("blk_aio_prwv\n");
     acb->has_returned = true;
     if (acb->rwco.ret != NOT_DONE) {
+        printf("in if NOT_DONE\n");
         aio_bh_schedule_oneshot(blk_get_aio_context(blk),
                                 blk_aio_complete_bh, acb);
     }
@@ -1311,6 +1314,7 @@ static void blk_aio_read_entry(void *opaque)
     BlkAioEmAIOCB *acb = opaque;
     BlkRwCo *rwco = &acb->rwco;
 
+    //printf("blk_aio_read_entry\n");
     assert(rwco->qiov->size == acb->bytes);
     rwco->ret = blk_co_preadv(rwco->blk, rwco->offset, acb->bytes,
                               rwco->qiov, rwco->flags);
@@ -1484,6 +1488,7 @@ BlockAIOCB *blk_aio_ioctl(BlockBackend *blk, unsigned long int req, void *buf,
     };
     qemu_iovec_init_external(&qiov, &iov, 1);
 
+    printf("blk_aio_ioctl\n");
     return blk_aio_prwv(blk, req, 0, &qiov, blk_aio_ioctl_entry, 0, cb, opaque);
 }
 
