@@ -863,7 +863,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     if (!drv) {
         return -ENOMEDIUM;
     }
-    //printf("bdrv_driver_preadv offset is %d, bytes is %d\n", offset, bytes);
+    printf("bdrv_driver_preadv prio is %d, bytes is %d\n", qiov->prio, bytes);
 
     if (drv->bdrv_co_preadv) {
         //printf("enter if\n");
@@ -1192,6 +1192,8 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
             qemu_iovec_init(&local_qiov, qiov->niov);
             qemu_iovec_concat(&local_qiov, qiov, bytes - bytes_remaining, num);
 
+            /* e6998 */
+            local_qiov.tag_prio = qiov->tag_prio;
             ret = bdrv_driver_preadv(bs, offset + bytes - bytes_remaining,
                                      num, &local_qiov, 0);
             max_bytes -= num;
@@ -1273,6 +1275,8 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
         bytes = ROUND_UP(bytes, align);
     }
 
+    /* e6998 */
+    local_qiov.tag_prio = qiov->tag_prio;
     tracked_request_begin(&req, bs, offset, bytes, BDRV_TRACKED_READ);
     ret = bdrv_aligned_preadv(child, &req, offset, bytes, align,
                               use_local_qiov ? &local_qiov : qiov,

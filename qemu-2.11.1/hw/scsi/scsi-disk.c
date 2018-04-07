@@ -394,7 +394,7 @@ static void scsi_read_data(SCSIRequest *req)
     /* e6998 */
     uint8_t tag_prio = req->cmd.buf[9];
 
-    printf("in scsi_read_data, prio is %d\n", tag_prio);
+    //printf("in scsi_read_data, prio is %d\n", tag_prio);
 
     DPRINTF("Read sector_count=%d\n", r->sector_count);
     if (r->sector_count == 0) {

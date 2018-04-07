@@ -1314,7 +1314,7 @@ static void blk_aio_read_entry(void *opaque)
     BlkAioEmAIOCB *acb = opaque;
 
     BlkRwCo *rwco = &acb->rwco;
-    printf("in blk_aio_read_entry, prio is %d\n", rwco->qiov->tag_prio);
+    //printf("in blk_aio_read_entry, prio is %d\n", rwco->qiov->tag_prio);
 
     //printf("blk_aio_read_entry\n");
     assert(rwco->qiov->size == acb->bytes);
