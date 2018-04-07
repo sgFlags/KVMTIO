@@ -182,6 +182,9 @@ typedef struct RawPosixAIOData {
 #define aio_ioctl_cmd   aio_nbytes /* for QEMU_AIO_IOCTL */
     off_t aio_offset;
     int aio_type;
+
+    /* e6998 */
+    uint8_t tag_prio;
 } RawPosixAIOData;
 
 #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
@@ -1463,7 +1466,7 @@ static int aio_worker(void *arg)
     RawPosixAIOData *aiocb = arg;
     ssize_t ret = 0;
 
-    //printf("in aio_worker, aiocb->aio_type & is %d\n", (aiocb->aio_type & QEMU_AIO_TYPE_MASK));
+    printf("in aio_worker, aiocb->tag_prio is %d\n", aiocb->tag_prio);
     switch (aiocb->aio_type & QEMU_AIO_TYPE_MASK) {
     case QEMU_AIO_READ:
         ret = handle_aiocb_rw(aiocb);
@@ -1526,6 +1529,8 @@ static int paio_submit_co(BlockDriverState *bs, int fd,
     if (qiov) {
         acb->aio_iov = qiov->iov;
         acb->aio_niov = qiov->niov;
+        /* e6998 */
+        acb->tag_prio = qiov->tag_prio;
         assert(qiov->size == bytes);
     }
 
