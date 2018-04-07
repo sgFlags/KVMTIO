@@ -863,7 +863,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     if (!drv) {
         return -ENOMEDIUM;
     }
-    printf("bdrv_driver_preadv prio is %d, bytes is %d\n", qiov->prio, bytes);
+    printf("bdrv_driver_preadv prio is %d, bytes is %d\n", qiov->tag_prio, bytes);
 
     if (drv->bdrv_co_preadv) {
         //printf("enter if\n");
