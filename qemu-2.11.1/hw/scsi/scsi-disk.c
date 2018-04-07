@@ -421,6 +421,8 @@ static void scsi_read_data(SCSIRequest *req)
 
     first = !r->started;
     r->started = true;
+    /* e6998 */
+    r->tag_prio = tag_prio;
     if (first && r->need_fua_emulation) {
         printf("in first and need_fua\n");
         block_acct_start(blk_get_stats(s->qdev.conf.blk), &r->acct, 0,
@@ -2181,7 +2183,7 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     prio = buf[9];
     //for (i = 0; i < 11; i++)
       //  printf("buf[%d] is %d ", i, buf[i]);
-    printf("prio in qemu is %d\n", prio);
+    //printf("prio in qemu is %d\n", prio);
 
     if (!blk_is_available(s->qdev.conf.blk)) {
         scsi_check_condition(r, SENSE_CODE(NO_MEDIUM));
@@ -2903,7 +2905,7 @@ BlockAIOCB *scsi_dma_readv(int64_t offset, QEMUIOVector *iov,
 {
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
-    //printf("scsi_dma_readv\n");
+
     return blk_aio_preadv(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 
