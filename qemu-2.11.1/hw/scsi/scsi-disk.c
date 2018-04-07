@@ -81,6 +81,9 @@ typedef struct SCSIDiskReq {
     QEMUIOVector qiov;
     BlockAcctCookie acct;
     unsigned char *status;
+
+    /* e6998 */
+    uint8_t tag_prio;
 } SCSIDiskReq;
 
 #define SCSI_DISK_F_REMOVABLE             0
@@ -388,7 +391,10 @@ static void scsi_read_data(SCSIRequest *req)
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
     bool first;
 
-    //printf("scsi_read_data\n");
+    /* e6998 */
+    uint8_t tag_prio = req->cmd.buf[9];
+
+    printf("in scsi_read_data, prio is %d\n", tag_prio);
 
     DPRINTF("Read sector_count=%d\n", r->sector_count);
     if (r->sector_count == 0) {
@@ -2172,10 +2178,10 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
 
     command = buf[0];
 
-    prio = buf[10];
-    for (i = 0; i < 11; i++)
-        printf("buf[%d] is %d ", i, buf[i]);
-    printf("\n");
+    prio = buf[9];
+    //for (i = 0; i < 11; i++)
+      //  printf("buf[%d] is %d ", i, buf[i]);
+    printf("prio in qemu is %d\n", prio);
 
     if (!blk_is_available(s->qdev.conf.blk)) {
         scsi_check_condition(r, SENSE_CODE(NO_MEDIUM));
