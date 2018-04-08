@@ -1301,7 +1301,7 @@ static BlockAIOCB *blk_aio_prwv(BlockBackend *blk, int64_t offset, int bytes,
     //printf("blk_aio_prwv\n");
     acb->has_returned = true;
     if (acb->rwco.ret != NOT_DONE) {
-        printf("in if NOT_DONE\n");
+        //printf("in if NOT_DONE\n");
         aio_bh_schedule_oneshot(blk_get_aio_context(blk),
                                 blk_aio_complete_bh, acb);
     }

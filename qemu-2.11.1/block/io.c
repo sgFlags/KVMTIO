@@ -879,7 +879,7 @@ static int coroutine_fn bdrv_driver_preadv(BlockDriverState *bs,
     assert((bytes >> BDRV_SECTOR_BITS) <= BDRV_REQUEST_MAX_SECTORS);
 
     if (drv->bdrv_co_readv) {
-        printf("drv->bdrv_co_readv\n");
+        //printf("drv->bdrv_co_readv\n");
         return drv->bdrv_co_readv(bs, sector_num, nb_sectors, qiov);
     } else {
         BlockAIOCB *acb;
