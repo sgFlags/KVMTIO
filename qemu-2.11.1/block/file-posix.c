@@ -1095,6 +1095,7 @@ static bool preadv_present = true;
 static ssize_t
 qemu_preadv(int fd, const struct iovec *iov, int nr_iov, off_t offset)
 {
+    printf("about to use preadv\n");
     return preadv(fd, iov, nr_iov, offset);
 }
 
