@@ -1208,7 +1208,7 @@ static ssize_t handle_aiocb_rw(RawPosixAIOData *aiocb)
     ssize_t nbytes;
     char *buf;
 
-    //printf("aiocb->tag_prio is %d\n", aiocb->tag_prio);
+    printf("default tag_prio is %d, max is %d\n", current_machine.tag_prios.default_tag_prio, current_machine.tag_prios.max_tag_prio);
 
     if (!(aiocb->aio_type & QEMU_AIO_MISALIGNED)) {
         /*

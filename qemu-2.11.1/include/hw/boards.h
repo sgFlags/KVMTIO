@@ -209,6 +209,12 @@ struct MachineClass {
     int64_t (*get_default_cpu_node_id)(const MachineState *ms, int idx);
 };
 
+/* e6998 */
+typedef struct tag_prios {
+    uint8_t default_tag_prio;
+    uint8_t max_tag_prio;
+} TagPrios;
+
 /**
  * MachineState:
  */
@@ -248,6 +254,8 @@ struct MachineState {
     char *initrd_filename;
     const char *cpu_model;
     const char *cpu_type;
+    /* e6998 */
+    TagPrios tag_prios;
     AccelState *accelerator;
     CPUArchIdList *possible_cpus;
 };

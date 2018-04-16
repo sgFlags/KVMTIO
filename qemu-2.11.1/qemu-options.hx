@@ -11,7 +11,9 @@ STEXI
 @table @option
 ETEXI
 
-DEF("tag_prio", HAS_ARG, QEMU_OPTION_tag_prio, "assign the tag_prio for the machine", QEMU_ARCH_ALL)
+HXCOMM e6998
+DEF("tag_prio_d", HAS_ARG, QEMU_OPTION_tag_prio_d, "assign the default tag_prio for the machine", QEMU_ARCH_ALL)
+DEF("tag_prio_m", HAS_ARG, QEMU_OPTION_tag_prio_m, "assign the maximum tag_prio for the machine", QEMU_ARCH_ALL)
 
 DEF("help", 0, QEMU_OPTION_h,
     "-h or -help     display this help and exit\n", QEMU_ARCH_ALL)
