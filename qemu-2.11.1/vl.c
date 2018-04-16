@@ -3125,6 +3125,10 @@ int main(int argc, char **argv, char **envp)
     Error *err = NULL;
     bool list_data_dirs = false;
     char **dirs;
+
+    /* e6998 */
+    uint8_t default_prio;
+
     typedef struct BlockdevOptions_queue {
         BlockdevOptions *bdo;
         Location loc;
@@ -3511,6 +3515,10 @@ int main(int argc, char **argv, char **envp)
                 if (!opts) {
                     exit(EXIT_FAILURE);
                 }
+                break;
+            /* e6998 */
+            case QEMU_OPTION_tag_prio:
+                printf("tag_prio optarg is %s\n", optarg);
                 break;
 #ifdef CONFIG_TPM
             case QEMU_OPTION_tpmdev:
