@@ -3521,12 +3521,12 @@ int main(int argc, char **argv, char **envp)
             /* e6998 */
             case QEMU_OPTION_tag_prio_d:
                 //printf("tag_prio optarg is %s\n", optarg);
-                temp_prio = strtol(optarg, (char **), 10);
+                temp_prio = strtol(optarg, (char **)NULL, 10);
                 if (temp_prio <= 7 && temp_prio >= 1)
                     default_tag_prio = temp_prio;
                 break;
             case QEMU_OPTION_tag_prio_m:
-                temp_prio = strtol(optarg, (char **), 10);
+                temp_prio = strtol(optarg, (char **)NULL, 10);
                 if (temp_prio <= 7 && temp_prio >= 1)
                     max_tag_prio = temp_prio;
                 break;
@@ -4757,8 +4757,8 @@ int main(int argc, char **argv, char **envp)
     current_machine->boot_order = boot_order;
     current_machine->cpu_model = cpu_model;
     /* e6998 */
-    current_machine.tag_prios.default_tag_prio = default_tag_prio;
-    current_machine.tag_prios.max_tag_prio = max_tag_prio;
+    current_machine->tag_prios.default_tag_prio = default_tag_prio;
+    current_machine->tag_prios.max_tag_prio = max_tag_prio;
 
     parse_numa_opts(current_machine);
 
