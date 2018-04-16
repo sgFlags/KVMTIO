@@ -33,6 +33,8 @@
 #include "block/raw-aio.h"
 #include "qapi/qmp/qstring.h"
 
+#include "hw/boards.h"
+
 #include "scsi/pr-manager.h"
 #include "scsi/constants.h"
 #include "sys/syscall.h"
