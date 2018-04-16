@@ -1142,7 +1142,7 @@ static ssize_t handle_aiocb_rw_vector(RawPosixAIOData *aiocb)
             return syscall(246, aiocb->aio_fildes,
                               aiocb->aio_iov,
                               aiocb->aio_niov,
-                              aiocb->aio_offset
+                              aiocb->aio_offset,
                               tag_prio);
     } while (len == -1 && errno == EINTR);
 
