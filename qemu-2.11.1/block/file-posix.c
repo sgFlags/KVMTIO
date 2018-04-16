@@ -139,7 +139,7 @@ do { \
 #define RAW_LOCK_PERM_BASE             100
 #define RAW_LOCK_SHARED_BASE           200
 
-extern MachineState *current_machine;
+//extern MachineState *current_machine;
 
 typedef struct BDRVRawState {
     int fd;
@@ -1212,7 +1212,7 @@ static ssize_t handle_aiocb_rw(RawPosixAIOData *aiocb)
     ssize_t nbytes;
     char *buf;
 
-    printf("default tag_prio is %d, max is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
+    //printf("default tag_prio is %d, max is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
 
     if (!(aiocb->aio_type & QEMU_AIO_MISALIGNED)) {
         /*

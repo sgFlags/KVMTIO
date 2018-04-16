@@ -24,6 +24,7 @@
 #include "scsi/constants.h"
 #include "hw/virtio/virtio-bus.h"
 #include "hw/virtio/virtio-access.h"
+#include "hw/boards.h"
 
 static inline int virtio_scsi_get_lun(uint8_t *lun)
 {
@@ -598,7 +599,7 @@ bool virtio_scsi_handle_cmd_vq(VirtIOSCSI *s, VirtQueue *vq)
 
     QTAILQ_HEAD(, VirtIOSCSIReq) reqs = QTAILQ_HEAD_INITIALIZER(reqs);
 
-    //printf("in virtio_scsi_handle_cmd_vq, outside loop\n");
+    printf("in virtio_scsi_handle_cmd_vq, current machine prio %d\n", current_machine->tag_prios.default_tag_prio);
     do {
         virtio_queue_set_notification(vq, 0);
 
