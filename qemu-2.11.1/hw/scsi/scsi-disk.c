@@ -2179,7 +2179,7 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     uint8_t prio;
     int i;
 
-    printf("in virtio_scsi_handle_cmd_vq, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
+    printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
     command = buf[0];
 
     prio = buf[9];
