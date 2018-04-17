@@ -599,7 +599,6 @@ bool virtio_scsi_handle_cmd_vq(VirtIOSCSI *s, VirtQueue *vq)
 
     QTAILQ_HEAD(, VirtIOSCSIReq) reqs = QTAILQ_HEAD_INITIALIZER(reqs);
 
-    printf("in virtio_scsi_handle_cmd_vq, current machine prio %d\n", current_machine->tag_prios.default_tag_prio);
     do {
         virtio_queue_set_notification(vq, 0);
 

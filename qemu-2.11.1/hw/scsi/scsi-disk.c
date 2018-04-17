@@ -39,6 +39,7 @@ do { printf("scsi-disk: " fmt , ## __VA_ARGS__); } while (0)
 #include "hw/block/block.h"
 #include "sysemu/dma.h"
 #include "qemu/cutils.h"
+#include "hw/boards.h"
 
 #ifdef __linux
 #include <scsi/sg.h>
@@ -2178,6 +2179,7 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     uint8_t prio;
     int i;
 
+    printf("in virtio_scsi_handle_cmd_vq, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
     command = buf[0];
 
     prio = buf[9];
