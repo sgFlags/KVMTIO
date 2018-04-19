@@ -2177,9 +2177,11 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     uint32_t len;
     uint8_t command;
     uint8_t prio;
+    uint8_t default_tag_prio;
+    uint8_t max_tag_prio;
     int i;
 
-    printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
+    //printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
     command = buf[0];
 
     prio = buf[9];

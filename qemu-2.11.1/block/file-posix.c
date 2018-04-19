@@ -1176,7 +1176,7 @@ static ssize_t handle_aiocb_rw_linear(RawPosixAIOData *aiocb, char *buf)
                          aiocb->aio_nbytes - offset,
                          aiocb->aio_offset + offset);
         } else {
-            printf("about to use pread\n");
+            //printf("about to use pread\n");
             //len = pread(aiocb->aio_fildes,
             len = syscall(247, aiocb->aio_fildes, 
                         buf + offset,
