@@ -424,9 +424,6 @@ static void scsi_read_data(SCSIRequest *req)
     r->started = true;
     /* e6998 */
     r->tag_prio = tag_prio;
-
-    printf("in scsi_read_data, tag_prios are default %d, max %d, assigned %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio, r->tag_prio);
-
     if (first && r->need_fua_emulation) {
         printf("in first and need_fua\n");
         block_acct_start(blk_get_stats(s->qdev.conf.blk), &r->acct, 0,
@@ -2180,11 +2177,9 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     uint32_t len;
     uint8_t command;
     uint8_t prio;
-    uint8_t default_tag_prio;
-    uint8_t max_tag_prio;
     int i;
 
-    //printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
+    printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
     command = buf[0];
 
     prio = buf[9];
