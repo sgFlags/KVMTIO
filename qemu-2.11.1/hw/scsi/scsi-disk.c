@@ -40,6 +40,10 @@ do { printf("scsi-disk: " fmt , ## __VA_ARGS__); } while (0)
 #include "sysemu/dma.h"
 #include "qemu/cutils.h"
 #include "hw/boards.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include "qemu/tagio.h"
 
 #ifdef __linux
 #include <scsi/sg.h>
@@ -84,7 +88,7 @@ typedef struct SCSIDiskReq {
     unsigned char *status;
 
     /* e6998 */
-    uint8_t tag_prio;
+    struct tag_data td;
 } SCSIDiskReq;
 
 #define SCSI_DISK_F_REMOVABLE             0
@@ -391,12 +395,24 @@ static void scsi_read_data(SCSIRequest *req)
     SCSIDiskReq *r = DO_UPCAST(SCSIDiskReq, req, req);
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
     bool first;
-
+    pid_t vm_pid;
+    uint8_t prio;
+    struct tag_data td;
     /* e6998 */
-    uint8_t tag_prio = req->cmd.buf[9];
-
-    printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d, prio is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio, tag_prio);
-    //printf("in scsi_read_data, prio is %d\n", tag_prio);
+    prio = req->cmd.buf[9];
+    td.tag_flags = FLAG_TAG;
+    if (prio > MAX_TAG_PRIO || prio < MIN_TAG_PRIO) {
+        td.tag_flags = 0;
+        td.prio = current_machine->tag_prios.default_tag_prio;
+    } else if (prio > current_machine->tag_prios.max_tag_prio) {
+        td.prio = current_machine->tag_prios.max_tag_prio;
+    }
+    vm_pid = getpid();
+    td.proc_pid = req->cmd.buf[6] | (vm_pid << 8);
+    td.vm_pid = 1;
+    
+    //printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d, prio is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio, tag_prio);
+    printf("in scsi_read_data, prio is %u, vm is %u, proc is %u\n", td.prio, td.vm_pid, td.proc_pid);
 
     DPRINTF("Read sector_count=%d\n", r->sector_count);
     if (r->sector_count == 0) {
@@ -424,7 +440,7 @@ static void scsi_read_data(SCSIRequest *req)
     first = !r->started;
     r->started = true;
     /* e6998 */
-    r->tag_prio = tag_prio;
+    r->td = td;
     if (first && r->need_fua_emulation) {
         printf("in first and need_fua\n");
         block_acct_start(blk_get_stats(s->qdev.conf.blk), &r->acct, 0,
@@ -2184,10 +2200,11 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
 
     /* e6998 */
     prio = buf[9];
-    for (i = 0; i < 11; i++)
-        printf("buf[%d] is %d ", i, buf[i]);
+    //for (i = 0; i < 11; i++)
+      //  printf("buf[%d] is %d ", i, buf[i]);
     //printf("prio in qemu is %d\n", prio);
 
+    printf("\n");
     if (!blk_is_available(s->qdev.conf.blk)) {
         scsi_check_condition(r, SENSE_CODE(NO_MEDIUM));
         return 0;
@@ -2763,7 +2780,7 @@ static BlockAIOCB *scsi_block_dma_readv(int64_t offset,
                                         void *opaque)
 {
     SCSIBlockReq *r = opaque;
-    //printf("scsi_block_dma_readv\n");
+    printf("scsi_block_dma_readv\n");
     return scsi_block_do_sgio(r, offset, iov,
                               SG_DXFER_FROM_DEV, cb, cb_opaque);
 }
@@ -2909,7 +2926,8 @@ BlockAIOCB *scsi_dma_readv(int64_t offset, QEMUIOVector *iov,
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
 
-    iov->tag_prio = r->tag_prio;
+    printf("scsi_dma_readv\n");
+    iov->tag_prio = r->td.prio;
     return blk_aio_preadv(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 
