@@ -406,7 +406,8 @@ static void scsi_read_data(SCSIRequest *req)
         td.prio = current_machine->tag_prios.default_tag_prio;
     } else if (prio > current_machine->tag_prios.max_tag_prio) {
         td.prio = current_machine->tag_prios.max_tag_prio;
-    }
+    } else
+        td.prio = prio;
     vm_pid = getpid();
     td.proc_pid = req->cmd.buf[6] | (vm_pid << 8);
     td.vm_pid = 1;
@@ -2193,18 +2194,18 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     SCSIDiskClass *sdc = (SCSIDiskClass *) object_get_class(OBJECT(s));
     uint32_t len;
     uint8_t command;
-    uint8_t prio;
-    int i;
+    //uint8_t prio;
+    //int i;
 
     command = buf[0];
 
     /* e6998 */
-    prio = buf[9];
+    //prio = buf[9];
     //for (i = 0; i < 11; i++)
       //  printf("buf[%d] is %d ", i, buf[i]);
     //printf("prio in qemu is %d\n", prio);
 
-    printf("\n");
+    //printf("\n");
     if (!blk_is_available(s->qdev.conf.blk)) {
         scsi_check_condition(r, SENSE_CODE(NO_MEDIUM));
         return 0;
@@ -2927,7 +2928,7 @@ BlockAIOCB *scsi_dma_readv(int64_t offset, QEMUIOVector *iov,
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
 
     //printf("scsi_dma_readv\n");
-    iov->td = r->td;
+    iov->td = r->td.prio;
     return blk_aio_preadv(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 
