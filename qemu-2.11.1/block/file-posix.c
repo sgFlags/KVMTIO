@@ -1135,7 +1135,7 @@ static ssize_t handle_aiocb_rw_vector(RawPosixAIOData *aiocb)
 {
     ssize_t len;
     /* e6998 */
-    uint8_t tag_prio = aiocb->tag_prio;
+    //uint8_t tag_prio = aiocb->tag_prio;
 
     do {
         if (aiocb->aio_type & QEMU_AIO_WRITE)
@@ -1169,7 +1169,7 @@ static ssize_t handle_aiocb_rw_linear(RawPosixAIOData *aiocb, char *buf)
     ssize_t offset = 0;
     ssize_t len;
     /* e6998 */
-    uint8_t tag_prio = aiocb->tag_prio;
+    //uint8_t tag_prio = aiocb->tag_prio;
 
     while (offset < aiocb->aio_nbytes) {
         if (aiocb->aio_type & QEMU_AIO_WRITE) {
