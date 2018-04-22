@@ -1101,8 +1101,8 @@ static ssize_t
 qemu_preadv(int fd, const struct iovec *iov, int nr_iov, off_t offset)
 {
     //printf("preadv, fd is %d, iov is %p, nr_iov is %d, offset is %lli\n", fd, iov, nr_iov, offset);
-    //return preadv(fd, iov, nr_iov, offset);
-    return syscall(246, fd, iov, nr_iov, offset, 0);
+    return preadv(fd, iov, nr_iov, offset);
+    //return syscall(246, fd, iov, nr_iov, offset, 0);
 }
 
 static ssize_t
@@ -1142,12 +1142,12 @@ static ssize_t handle_aiocb_rw_vector(RawPosixAIOData *aiocb)
                                aiocb->aio_niov,
                                aiocb->aio_offset);
          else
-            //len = qemu_preadv(aiocb->aio_fildes,
-            return syscall(246, aiocb->aio_fildes,
+            len = qemu_preadv(aiocb->aio_fildes,
+            //return syscall(246, aiocb->aio_fildes,
                               aiocb->aio_iov,
                               aiocb->aio_niov,
-                              aiocb->aio_offset,
-                              tag_prio);
+                              aiocb->aio_offset);
+                    //          tag_prio);
     } while (len == -1 && errno == EINTR);
 
     if (len == -1) {
@@ -1177,12 +1177,12 @@ static ssize_t handle_aiocb_rw_linear(RawPosixAIOData *aiocb, char *buf)
                          aiocb->aio_offset + offset);
         } else {
             //printf("about to use pread\n");
-            //len = pread(aiocb->aio_fildes,
-            len = syscall(247, aiocb->aio_fildes, 
+            len = pread(aiocb->aio_fildes,
+            //len = syscall(247, aiocb->aio_fildes, 
                         buf + offset,
                         aiocb->aio_nbytes - offset,
-                        aiocb->aio_offset + offset,
-                        tag_prio);
+                        aiocb->aio_offset + offset);
+                        //tag_prio);
         }
         if (len == -1 && errno == EINTR) {
             continue;
