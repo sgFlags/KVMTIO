@@ -14,6 +14,8 @@
 #ifndef IOV_H
 #define IOV_H
 
+#include "qemu/tagio.h"
+
 /**
  * count and return data size, in bytes, of an iovec
  * starting at `iov' of `iov_cnt' number of elements.
