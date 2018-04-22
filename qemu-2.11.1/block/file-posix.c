@@ -32,6 +32,7 @@
 #include "qemu/iov.h"
 #include "block/raw-aio.h"
 #include "qapi/qmp/qstring.h"
+#include "qemu/tagio.h"
 
 #include "hw/boards.h"
 
