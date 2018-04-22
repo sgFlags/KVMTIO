@@ -408,7 +408,7 @@ static void scsi_read_data(SCSIRequest *req)
         td.prio = current_machine->tag_prios.max_tag_prio;
     }
     vm_pid = getpid();
-    td.proc_pid = req->cmd.buf[6];// | (vm_pid << 8);
+    td.proc_pid = req->cmd.buf[6] | (vm_pid << 8);
     td.vm_pid = 1;
     
     //printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d, prio is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio, tag_prio);
@@ -2926,8 +2926,8 @@ BlockAIOCB *scsi_dma_readv(int64_t offset, QEMUIOVector *iov,
     SCSIDiskReq *r = opaque;
     SCSIDiskState *s = DO_UPCAST(SCSIDiskState, qdev, r->req.dev);
 
-    printf("scsi_dma_readv\n");
-    iov->tag_prio = r->td.prio;
+    //printf("scsi_dma_readv\n");
+    iov->td = r->td;
     return blk_aio_preadv(s->qdev.conf.blk, offset, iov, 0, cb, cb_opaque);
 }
 

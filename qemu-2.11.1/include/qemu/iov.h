@@ -136,7 +136,8 @@ typedef struct QEMUIOVector {
     int nalloc;
     size_t size;
     /* e6998 */
-    uint8_t tag_prio;
+    //uint8_t tag_prio;
+    struct tag_data td;
 } QEMUIOVector;
 
 void qemu_iovec_init(QEMUIOVector *qiov, int alloc_hint);

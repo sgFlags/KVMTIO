@@ -190,7 +190,8 @@ typedef struct RawPosixAIOData {
     int aio_type;
 
     /* e6998 */
-    uint8_t tag_prio;
+    //uint8_t tag_prio;
+    struct tag_data td;
 } RawPosixAIOData;
 
 #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
@@ -1213,7 +1214,7 @@ static ssize_t handle_aiocb_rw(RawPosixAIOData *aiocb)
     ssize_t nbytes;
     char *buf;
 
-    //printf("default tag_prio is %d, max is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
+    printf("in handle_aiocb_rw, prio is %u, vm_pid is %u, proc_pid is %u, tag_flags is %u\n", aiocb->td.prio, aiocb->td.vm_pid, aiocb->td.proc_pid, aiocb->td.tag_flags);
 
     if (!(aiocb->aio_type & QEMU_AIO_MISALIGNED)) {
         /*
@@ -1549,7 +1550,7 @@ static int paio_submit_co(BlockDriverState *bs, int fd,
         acb->aio_iov = qiov->iov;
         acb->aio_niov = qiov->niov;
         /* e6998 */
-        acb->tag_prio = qiov->tag_prio;
+        acb->td = qiov->td;
         assert(qiov->size == bytes);
     }
 

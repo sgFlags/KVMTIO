@@ -1193,7 +1193,7 @@ static int coroutine_fn bdrv_aligned_preadv(BdrvChild *child,
             qemu_iovec_concat(&local_qiov, qiov, bytes - bytes_remaining, num);
 
             /* e6998 */
-            local_qiov.tag_prio = qiov->tag_prio;
+            local_qiov.td = qiov->td;
             ret = bdrv_driver_preadv(bs, offset + bytes - bytes_remaining,
                                      num, &local_qiov, 0);
             max_bytes -= num;
@@ -1276,7 +1276,7 @@ int coroutine_fn bdrv_co_preadv(BdrvChild *child,
     }
 
     /* e6998 */
-    local_qiov.tag_prio = qiov->tag_prio;
+    local_qiov.td = qiov->td;
     tracked_request_begin(&req, bs, offset, bytes, BDRV_TRACKED_READ);
     ret = bdrv_aligned_preadv(child, &req, offset, bytes, align,
                               use_local_qiov ? &local_qiov : qiov,
