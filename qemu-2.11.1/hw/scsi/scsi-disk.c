@@ -395,6 +395,7 @@ static void scsi_read_data(SCSIRequest *req)
     /* e6998 */
     uint8_t tag_prio = req->cmd.buf[9];
 
+    printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d, prio is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio, tag_prio);
     //printf("in scsi_read_data, prio is %d\n", tag_prio);
 
     DPRINTF("Read sector_count=%d\n", r->sector_count);
@@ -2179,12 +2180,12 @@ static int32_t scsi_disk_dma_command(SCSIRequest *req, uint8_t *buf)
     uint8_t prio;
     int i;
 
-    printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio);
     command = buf[0];
 
+    /* e6998 */
     prio = buf[9];
-    //for (i = 0; i < 11; i++)
-      //  printf("buf[%d] is %d ", i, buf[i]);
+    for (i = 0; i < 11; i++)
+        printf("buf[%d] is %d ", i, buf[i]);
     //printf("prio in qemu is %d\n", prio);
 
     if (!blk_is_available(s->qdev.conf.blk)) {
