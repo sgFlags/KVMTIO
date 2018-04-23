@@ -9,6 +9,8 @@
 
 #define MAX_TAG_PRIO 12
 #define MIN_TAG_PRIO 1
+#define DEFAULT_TAG_PRIO 5
+#define DEFAULT_MAX_TAG_PRIO 10
 
 struct tag_data {
     uint8_t prio;

@@ -26,6 +26,7 @@
 #include "qemu/cutils.h"
 #include "qemu/help_option.h"
 #include "qemu/uuid.h"
+#include "qemu/tagio.h"
 
 #ifdef CONFIG_SECCOMP
 #include "sysemu/seccomp.h"
@@ -3128,8 +3129,8 @@ int main(int argc, char **argv, char **envp)
 
     /* e6998 */
     uint8_t temp_prio;
-    uint8_t default_tag_prio = 4;
-    uint8_t max_tag_prio = 2;
+    uint8_t default_tag_prio = DEFAULT_TAG_PRIO;
+    uint8_t max_tag_prio = DEFAULT_MAX_TAG_PRIO;
 
     typedef struct BlockdevOptions_queue {
         BlockdevOptions *bdo;
@@ -3522,12 +3523,12 @@ int main(int argc, char **argv, char **envp)
             case QEMU_OPTION_tag_prio_d:
                 //printf("tag_prio optarg is %s\n", optarg);
                 temp_prio = strtol(optarg, (char **)NULL, 10);
-                if (temp_prio <= 7 && temp_prio >= 1)
+                if (temp_prio <= MAX_TAG_PRIO && temp_prio >= MIN_TAG_PRIO)
                     default_tag_prio = temp_prio;
                 break;
             case QEMU_OPTION_tag_prio_m:
                 temp_prio = strtol(optarg, (char **)NULL, 10);
-                if (temp_prio <= 7 && temp_prio >= 1)
+                if (temp_prio <= MAX_TAG_PRIO && temp_prio >= MIN_TAG_PRIO)
                     max_tag_prio = temp_prio;
                 break;
 #ifdef CONFIG_TPM
