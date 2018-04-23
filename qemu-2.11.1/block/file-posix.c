@@ -1171,7 +1171,7 @@ static ssize_t handle_aiocb_rw_linear(RawPosixAIOData *aiocb, char *buf)
     ssize_t len;
     /* e6998 */
     //uint8_t tag_prio = aiocb->tag_prio;
-    struct tag_data td = aiocb->tb;
+    struct tag_data td = aiocb->td;
 
     while (offset < aiocb->aio_nbytes) {
         if (aiocb->aio_type & QEMU_AIO_WRITE) {
