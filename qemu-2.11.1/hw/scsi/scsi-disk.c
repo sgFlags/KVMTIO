@@ -413,7 +413,7 @@ static void scsi_read_data(SCSIRequest *req)
     td.vm_pid = 1;
     
     //printf("in scsi_disk_dma_command, current machine default prio %d, max prio %d, prio is %d\n", current_machine->tag_prios.default_tag_prio, current_machine->tag_prios.max_tag_prio, tag_prio);
-    printf("in scsi_read_data, original prio is %u, prio is %u, vm is %u, proc is %u, flags is %u\n", req->cmd.buf[9], td.prio, td.vm_pid, td.proc_pid, td.tag_flags);
+    //printf("in scsi_read_data, original prio is %u, prio is %u, vm is %u, proc is %u, flags is %u\n", req->cmd.buf[9], td.prio, td.vm_pid, td.proc_pid, td.tag_flags);
 
     DPRINTF("Read sector_count=%d\n", r->sector_count);
     if (r->sector_count == 0) {
