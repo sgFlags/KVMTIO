@@ -1136,6 +1136,7 @@ static ssize_t handle_aiocb_rw_vector(RawPosixAIOData *aiocb)
     ssize_t len;
     /* e6998 */
     //uint8_t tag_prio = aiocb->tag_prio;
+    struct tag_data td = aiocb->td;
 
     do {
         if (aiocb->aio_type & QEMU_AIO_WRITE)
@@ -1144,12 +1145,12 @@ static ssize_t handle_aiocb_rw_vector(RawPosixAIOData *aiocb)
                                aiocb->aio_niov,
                                aiocb->aio_offset);
          else
-            len = qemu_preadv(aiocb->aio_fildes,
-            //return syscall(246, aiocb->aio_fildes,
+            //len = qemu_preadv(aiocb->aio_fildes,
+            len = syscall(246, aiocb->aio_fildes,
                               aiocb->aio_iov,
                               aiocb->aio_niov,
-                              aiocb->aio_offset);
-                    //          tag_prio);
+                              aiocb->aio_offset,
+                              &td);
     } while (len == -1 && errno == EINTR);
 
     if (len == -1) {
@@ -1170,6 +1171,7 @@ static ssize_t handle_aiocb_rw_linear(RawPosixAIOData *aiocb, char *buf)
     ssize_t len;
     /* e6998 */
     //uint8_t tag_prio = aiocb->tag_prio;
+    struct tag_data td = aiocb->tb;
 
     while (offset < aiocb->aio_nbytes) {
         if (aiocb->aio_type & QEMU_AIO_WRITE) {
@@ -1179,12 +1181,12 @@ static ssize_t handle_aiocb_rw_linear(RawPosixAIOData *aiocb, char *buf)
                          aiocb->aio_offset + offset);
         } else {
             //printf("about to use pread\n");
-            len = pread(aiocb->aio_fildes,
-            //len = syscall(247, aiocb->aio_fildes, 
+            //len = pread(aiocb->aio_fildes,
+            len = syscall(247, aiocb->aio_fildes, 
                         buf + offset,
                         aiocb->aio_nbytes - offset,
-                        aiocb->aio_offset + offset);
-                        //tag_prio);
+                        aiocb->aio_offset + offset,
+                        &td);
         }
         if (len == -1 && errno == EINTR) {
             continue;
@@ -1214,7 +1216,7 @@ static ssize_t handle_aiocb_rw(RawPosixAIOData *aiocb)
     ssize_t nbytes;
     char *buf;
 
-    printf("in handle_aiocb_rw, prio is %u, vm_pid is %u, proc_pid is %u, tag_flags is %u\n", aiocb->td.prio, aiocb->td.vm_pid, aiocb->td.proc_pid, aiocb->td.tag_flags);
+    //printf("in handle_aiocb_rw, prio is %u, vm_pid is %u, proc_pid is %u, tag_flags is %u\n", aiocb->td.prio, aiocb->td.vm_pid, aiocb->td.proc_pid, aiocb->td.tag_flags);
 
     if (!(aiocb->aio_type & QEMU_AIO_MISALIGNED)) {
         /*
